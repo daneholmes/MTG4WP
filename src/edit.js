@@ -1,4 +1,4 @@
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useRef } from '@wordpress/element';
 import { Button, TextControl, CheckboxControl, Spinner } from '@wordpress/components';
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
@@ -8,6 +8,7 @@ export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps();
 	const [cards, setCards] = useState(attributes.cards || []);
 	const [isLoading, setIsLoading] = useState(false);
+	const fetchCycle = useRef(0);
 
 	const typePriority = ['Creature', 'Land', 'Artifact', 'Enchantment', 'Planeswalker', 'Battle', 'Instant', 'Sorcery'];
 
@@ -62,7 +63,6 @@ export default function Edit({ attributes, setAttributes }) {
 					scryfallName = data.name;
 				}
 
-
 				// Clean and set the card type
 				const prioritizedType = prioritizeType(type);
 
@@ -85,24 +85,25 @@ export default function Edit({ attributes, setAttributes }) {
 			}
 		} catch (error) {
 			console.error(`Error fetching card data: ${error}`);
-		} finally {
-			setIsLoading(false);
-			console.log('Fetch operation completed.');
 		}
 	};
 
 	const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 	useEffect(() => {
-		setIsLoading(true);
-		const fetchCards = async () => {
+		const fetchData = async () => {
+			setIsLoading(true);
+			const currentFetchCycle = fetchCycle.current;
 			for (let i = 0; i < cards.length; i++) {
+				if (fetchCycle.current !== currentFetchCycle) return; // Abort if fetch cycle has been invalidated
 				await fetchCardData(cards[i], i);
-				await delay(50);
+				await delay(50); // Add a 50ms delay between each API call
 			}
 			setIsLoading(false);
 		};
-		fetchCards();
+
+		fetchCycle.current++;
+		fetchData();
 	}, [cards.map((card) => `${card.name}-${card.set}-${card.number}`).join(',')]);
 
 	// Update card field values
