@@ -99,18 +99,24 @@ export default function save({ attributes }) {
 		}
 	}
 
+	// Get the default image
+	const defaultCard = commanderCards[0] || Object.values(groupedCards).flat()[0];
+	const defaultImage = defaultCard?.frontImage || '../assets/mtg_card_back.png';
+	const defaultAltText = defaultCard?.scryfallName || 'Magic: The Gathering Card';
+	const defaultFoil = defaultCard?.foil ? 'Yes' : 'No';
+
 	return (
 		<div {...blockProps} className="mtg-tools-container">
 			<div className="mtg-tools-column mtg-tools-image-column">
 				<div className="mtg-tools-sticky">
 					<img
 						id="mtg-tools-default-image"
-						src={commanderCards[0]?.frontImage || '../assets/mtg_card_back.png'}
-						alt={commanderCards[0]?.scryfallName || 'Magic: The Gathering Card'}
+						src={defaultImage}
+						alt={defaultAltText}
 						className="mtg-tools-image"
-						data-foil={commanderCards[0]?.foil ? 'Yes' : 'No'}
+						data-foil={defaultFoil}
 					/>
-					{commanderCards[0]?.foil && (
+					{defaultCard?.foil && (
 						<div className="mtg-tools-gradient-overlay"></div>
 					)}
 				</div>
