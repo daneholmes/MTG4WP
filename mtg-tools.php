@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       MTG Tools
- * Plugin URI:        https://daneholmes.com
+ * Plugin URI:        https://github.com/daneholmes/MTG-Tools
  * Description:       A plugin for displaying Magic: The Gathering cards on WordPress
  * Requires at least: 6.1
  * Requires PHP:      7.0
