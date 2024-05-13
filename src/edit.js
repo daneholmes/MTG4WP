@@ -91,12 +91,21 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 	};
 
-	useEffect(() => {
+	const fetchAllCardData = async () => {
 		setIsLoading(true);
-		Promise.all(cards.map((card, index) => fetchCardData(card, index))).then(() => {
-			setIsLoading(false);
-		});
-	}, [cards.map((card) => `${card.name}-${card.set}-${card.number}`).join(',')]);
+		for (let index = 0; index < cards.length; index++) {
+			await new Promise(resolve => setTimeout(resolve, 50));
+			await fetchCardData(cards[index], index);
+		}
+		setIsLoading(false);
+	};
+
+	// Trigger API call when attributes are updated
+	useEffect(() => {
+		if (attributes.cards && attributes.cards.length > 0) {
+			fetchAllCardData();
+		}
+	}, [attributes.cards]);
 
 	// Update card field values
 	const updateCard = (index, key, value) => {
