@@ -109,17 +109,20 @@ export default function save({ attributes }) {
 		<div {...blockProps} className="mtg-tools-container">
 			<div className="mtg-tools-column mtg-tools-image-column">
 				<div className="mtg-tools-sticky">
-					<img
-						id="mtg-tools-default-image"
-						src={defaultImage}
-						alt={defaultAltText}
-						className="mtg-tools-image"
-						data-foil={defaultFoil}
-					/>
-					{defaultCard?.foil && (
-						<div className="mtg-tools-gradient-overlay"></div>
-					)}
+					<div className="mtg-tools-popup-image-wrapper">
+						<img
+							id="mtg-tools-default-image"
+							src={defaultImage}
+							alt={defaultAltText}
+							className="mtg-tools-image"
+							data-foil={defaultFoil}
+						/>
+						{defaultCard?.foil && (
+							<div className="mtg-tools-gradient-overlay"></div>
+						)}
+					</div>
 				</div>
+
 			</div>
 
 			<div className="mtg-tools-column">

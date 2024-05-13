@@ -45,11 +45,9 @@
 	0% {
 		background-position: 0% 50%;
 	}
-
 	50% {
 		background-position: 100% 50%;
 	}
-
 	100% {
 		background-position: 0% 50%;
 	}
@@ -68,7 +66,6 @@
 .mtg-tools-card .mtg-tools-flip:hover {
 	transform: rotate(-180deg);
 }
-
 
 .mtg-tools-card {
 	display: flex;
