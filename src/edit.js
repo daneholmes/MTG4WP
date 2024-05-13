@@ -97,7 +97,7 @@ export default function Edit({ attributes, setAttributes }) {
 			for (let i = 0; i < cards.length; i++) {
 				if (fetchCycle.current !== currentFetchCycle) return; // Abort if fetch cycle has been invalidated
 				await fetchCardData(cards[i], i);
-				await delay(50); // Add a 50ms delay between each API call
+				await delay(50);
 			}
 			setIsLoading(false);
 		};
