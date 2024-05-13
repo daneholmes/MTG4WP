@@ -91,11 +91,18 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 	};
 
+	const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 	useEffect(() => {
 		setIsLoading(true);
-		Promise.all(cards.map((card, index) => fetchCardData(card, index))).then(() => {
+		const fetchCards = async () => {
+			for (let i = 0; i < cards.length; i++) {
+				await fetchCardData(cards[i], i);
+				await delay(50);
+			}
 			setIsLoading(false);
-		});
+		};
+		fetchCards();
 	}, [cards.map((card) => `${card.name}-${card.set}-${card.number}`).join(',')]);
 
 	// Update card field values
