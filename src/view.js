@@ -4,17 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		let showingBack = false;
 		let lastHoveredCard = null;
 
-		const removeGradientOverlay = () => {
-			const existingOverlay = defaultImageElement.nextElementSibling;
-			if (existingOverlay && existingOverlay.classList.contains('mtg-tools-gradient-overlay')) {
+		const removeGradientOverlay = (element) => {
+			const existingOverlay = element.parentNode.querySelector('.mtg-tools-gradient-overlay');
+			if (existingOverlay) {
 				existingOverlay.remove();
 			}
 		};
 
 		const addGradientOverlay = (element) => {
-			removeGradientOverlay();
+			removeGradientOverlay(element);
 			const overlay = document.createElement('div');
 			overlay.className = 'mtg-tools-gradient-overlay';
+			element.parentNode.style.position = 'relative'; // Ensure the parent has position relative for absolute overlay
 			element.parentNode.appendChild(overlay);
 		};
 
@@ -22,11 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
 			return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || window.innerWidth <= 768;
 		};
 
+		const updatePopupImage = (card) => {
+			const popupImageElement = document.querySelector('.mtg-tools-popup-image');
+			if (popupImageElement) {
+				popupImageElement.src = showingBack ? card.backImage : card.frontImage;
+				if (card.foil) {
+					addGradientOverlay(popupImageElement);
+				} else {
+					removeGradientOverlay(popupImageElement);
+				}
+			}
+		};
+
 		const showPopup = (card) => {
 			let flipButtonHTML = '';
 			if (card.backImage) {
 				flipButtonHTML = `
-					<button id="flip-card-button" class="swal2-confirm swal2-styled" style="display: inline-block; margin-top: 10px;">
+					<button id="flip-card-button" class="wp-block-button__link wp-element-button mtg-tools-popup-flip-button">
 						${showingBack ? 'Show Front' : 'Show Back'}
 					</button>
 				`;
@@ -34,29 +47,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			Swal.fire({
 				html: `
-					<img src="${showingBack ? card.backImage : card.frontImage}"
-						 class="mtg-tools-popup-image"
-						 style="width: 100%; height: auto;"
-						 alt="${card.name}">
-					<p><a href="${card.scryfallURI}" target="_blank">View ${card.name} on Scryfall</a></p>
-					${flipButtonHTML}
+					<div class="mtg-tools-popup-content">
+						<div class="mtg-tools-popup-image-wrapper">
+							<img src="${showingBack ? card.backImage : card.frontImage}"
+								 class="mtg-tools-popup-image"
+								 alt="${card.name}">
+						</div>
+						${flipButtonHTML}
+					</div>
 				`,
 				showCloseButton: true,
 				showConfirmButton: false,
 				background: '#fff',
 				width: 'auto',
-				customClass: {
-					popup: 'wordpress-default-popup',
-				},
 				didRender: () => {
 					if (card.backImage) {
 						document.getElementById('flip-card-button').addEventListener('click', () => {
 							showingBack = !showingBack;
-							showPopup(card);  // Show the popup with the flipped image
+							updatePopupImage(card);  // Update the image within the existing popup
 						});
 					}
+					const popupImageElement = document.querySelector('.mtg-tools-popup-image');
 					if (card.foil) {
-						addGradientOverlay(document.querySelector('.swal2-image'));
+						addGradientOverlay(popupImageElement);
 					}
 				},
 				showClass: {
@@ -100,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					if (card.foil) {
 						addGradientOverlay(defaultImageElement);
 					} else {
-						removeGradientOverlay();
+						removeGradientOverlay(defaultImageElement);
 					}
 				}
 			});
@@ -117,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					if (card.foil) {
 						addGradientOverlay(defaultImageElement);
 					} else {
-						removeGradientOverlay();
+						removeGradientOverlay(defaultImageElement);
 					}
 				}
 			});
@@ -126,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (defaultImageElement.dataset.foil === 'Yes') {
 			addGradientOverlay(defaultImageElement);
 		} else {
-			removeGradientOverlay();
+			removeGradientOverlay(defaultImageElement);
 		}
 
 		document.addEventListener('mouseleave', () => {

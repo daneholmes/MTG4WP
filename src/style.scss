@@ -55,7 +55,6 @@
 	}
 }
 
-/* Assuming the button is inside a div with a specific class */
 .mtg-tools-card .mtg-tools-flip {
 	color: #111;
 	cursor: pointer;
@@ -118,6 +117,26 @@
 	vertical-align: middle;
 }
 
+.mtg-tools-popup-image-wrapper {
+	position: relative;
+}
+
+.mtg-tools-popup-image {
+	position: relative;
+	max-width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 6px;
+}
+
+.mtg-tools-popup-content {
+	padding-top: 32px;
+}
+
+.mtg-tools-popup-flip-button {
+	margin-top: 16px;
+}
+
 @media (max-width: 768px) {
 	.mtg-tools-container {
 		display: flex;
@@ -149,5 +168,21 @@
 
 	.mtg-tools-card-name {
 		cursor: pointer;
+	}
+
+	.mtg-tools-gradient-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(60deg, rgba(255, 107, 107, 0.7), rgba(240, 230, 140, 0.7), rgba(0, 191, 255, 0.7), rgba(50, 205, 50, 0.7));
+		background-size: 400% 400%;
+		mix-blend-mode: overlay;
+		opacity: 0.7;
+		pointer-events: none;
+		z-index: 1;
+		animation: rotateFoilColors 4s linear infinite;
+		border-radius: 6px;
 	}
 }
