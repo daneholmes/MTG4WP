@@ -6,7 +6,7 @@ Stable tag:        0.9.0
 License:           GPL-3.0-only
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
-A plugin for displaying Magic: The Gathering cards on WordPress.
+A plugin for displaying Magic: The Gathering cards on WordPress as Gutenberg Blocks.
 
 ## Description
 
