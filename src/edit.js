@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from '@wordpress/element';
+import { useState, useEffect, useRef } from '@wordpress/element';
 import { Button, TextControl, CheckboxControl, Spinner } from '@wordpress/components';
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
@@ -9,7 +9,6 @@ export default function Edit({ attributes, setAttributes }) {
 	const [cards, setCards] = useState(attributes.cards || []);
 	const [isLoading, setIsLoading] = useState(false);
 	const fetchCycle = useRef(0);
-	const debounceTimeout = useRef(null);
 
 	const typePriority = ['Creature', 'Land', 'Artifact', 'Enchantment', 'Planeswalker', 'Battle', 'Instant', 'Sorcery'];
 
@@ -91,31 +90,21 @@ export default function Edit({ attributes, setAttributes }) {
 
 	const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-	const fetchCardsData = useCallback(async () => {
-		setIsLoading(true);
-		const currentFetchCycle = fetchCycle.current;
-		for (let i = 0; i < cards.length; i++) {
-			if (fetchCycle.current !== currentFetchCycle) return; // Abort if fetch cycle has been invalidated
-			await fetchCardData(cards[i], i);
-			await delay(50); // Add a 50ms delay between each API call
-		}
-		setIsLoading(false);
-	}, [cards]);
-
 	useEffect(() => {
-		fetchCycle.current++;
-		fetchCardsData();
-	}, [cards, fetchCardsData]);
-
-	// Limit the rate of updating
-	const debounceUpdate = (callback, delay) => {
-		return (...args) => {
-			clearTimeout(debounceTimeout.current);
-			debounceTimeout.current = setTimeout(() => {
-				callback(...args);
-			}, delay);
+		const fetchData = async () => {
+			setIsLoading(true);
+			const currentFetchCycle = fetchCycle.current;
+			for (let i = 0; i < cards.length; i++) {
+				if (fetchCycle.current !== currentFetchCycle) return; // Abort if fetch cycle has been invalidated
+				await fetchCardData(cards[i], i);
+				await delay(500);
+			}
+			setIsLoading(false);
 		};
-	};
+
+		fetchCycle.current++;
+		fetchData();
+	}, [cards.map((card) => `${card.name}-${card.set}-${card.number}`).join(',')]);
 
 	// Update card field values
 	const updateCard = (index, key, value) => {
@@ -124,8 +113,6 @@ export default function Edit({ attributes, setAttributes }) {
 		setCards(updatedCards);
 		setAttributes({ cards: updatedCards });
 	};
-
-	const debouncedUpdateCard = useCallback(debounceUpdate(updateCard, 300), [cards]);
 
 	// Add new card template
 	const addCard = () => {
@@ -149,33 +136,33 @@ export default function Edit({ attributes, setAttributes }) {
 					<TextControl
 						label={__('Name', 'mtg-tools')}
 						value={card.name}
-						onChange={(value) => debouncedUpdateCard(index, 'name', value)}
+						onChange={(value) => updateCard(index, 'name', value)}
 					/>
 					<TextControl
 						label={__('Set', 'mtg-tools')}
 						value={card.set}
-						onChange={(value) => debouncedUpdateCard(index, 'set', value)}
+						onChange={(value) => updateCard(index, 'set', value)}
 					/>
 					<TextControl
 						label={__('Number', 'mtg-tools')}
 						value={card.number}
-						onChange={(value) => debouncedUpdateCard(index, 'number', value)}
+						onChange={(value) => updateCard(index, 'number', value)}
 					/>
 					<TextControl
 						label={__('Quantity', 'mtg-tools')}
 						type="number"
 						value={card.quantity}
-						onChange={(value) => debouncedUpdateCard(index, 'quantity', parseInt(value))}
+						onChange={(value) => updateCard(index, 'quantity', parseInt(value))}
 					/>
 					<CheckboxControl
 						label={__('Commander', 'mtg-tools')}
 						checked={card.commander}
-						onChange={(value) => debouncedUpdateCard(index, 'commander', value)}
+						onChange={(value) => updateCard(index, 'commander', value)}
 					/>
 					<CheckboxControl
 						label={__('Foil', 'mtg-tools')}
 						checked={card.foil}
-						onChange={(value) => debouncedUpdateCard(index, 'foil', value)}
+						onChange={(value) => updateCard(index, 'foil', value)}
 					/>
 					<Button isDestructive onClick={() => removeCard(index)}>{__('Remove Card', 'mtg-tools')}</Button>
 				</div>
