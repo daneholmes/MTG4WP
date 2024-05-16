@@ -30,4 +30,24 @@ function mtg_tools_enqueue_assets() {
 	wp_enqueue_script('sweetalert2-js', 'https://cdn.jsdelivr.net/npm/sweetalert2@11', array(),	null, true);
 }
 add_action('wp_enqueue_scripts', 'mtg_tools_enqueue_assets');
+
+function mtg_tools_enqueue_block_editor_assets() {
+	wp_enqueue_style(
+		'mtg-tools-editor-styles',
+		plugins_url( 'build/index.css', __FILE__ ),
+		array( 'wp-edit-blocks' ),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.css' )
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'mtg_tools_enqueue_block_editor_assets' );
+
+function mtg_tools_enqueue_block_assets() {
+	wp_enqueue_style(
+		'mtg-tools-style',
+		plugins_url( 'build/style-index.css', __FILE__ ),
+		array(),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/style-index.css' )
+	);
+}
+add_action( 'enqueue_block_assets', 'mtg_tools_enqueue_block_assets' );
 ?>
