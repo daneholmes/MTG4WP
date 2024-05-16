@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from '@wordpress/element';
-import { Button, TextControl, CheckboxControl, Spinner } from '@wordpress/components';
+import { Button, TextControl, CheckboxControl } from '@wordpress/components';
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import './editor.scss';
@@ -150,7 +150,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	return (
 		<div {...blockProps}>
-			{isLoading && <Spinner />}
+			{isLoading}
 			{cards.map((card, index) => (
 				<div key={index} className="mtg-card">
 					<div className="card-inputs">
