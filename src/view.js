@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			cardElement.addEventListener('mouseenter', () => {
 				if (!isTouchscreenOrSmallScreen()) {
 					lastHoveredCard = card;
-					showingBack = false; // Ensure we start with the front image
+					showingBack = false;
 					defaultImageElement.src = card.frontImage;
 					if (card.foil) {
 						addGradientOverlay(defaultImageElement);
