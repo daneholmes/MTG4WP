@@ -1,10 +1,10 @@
 {
-	"name": "mtg-tools",
+	"name": "magic-decks-and-cards",
 	"version": "1.0.0",
-	"description": "A block that displays a Magic: The Gathering Deck",
+	"description": "A plugin for displaying Magic: The Gathering© decks and card tooltips on WordPress using Gutenberg Blocks and shortcodes.",
 	"author": "Dane Holmes",
 	"license": "GPL-3.0-only",
-	"homepage": "https://daneholmes.com",
+	"homepage": "https://github.com/daneholmes/Magic-Decks-and-Cards",
 	"main": "build/index.js",
 	"scripts": {
 		"build": "wp-scripts build",
