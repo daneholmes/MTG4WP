@@ -101,7 +101,7 @@ export default function save({ attributes }) {
 
 	// Get the default image
 	const defaultCard = commanderCards[0] || Object.values(groupedCards).flat()[0];
-	const defaultImage = defaultCard?.frontImage || '../assets/mtg_card_back.png';
+	const defaultImage = defaultCard?.frontImage;
 	const defaultAltText = defaultCard?.scryfallName || 'Magic: The Gathering Card';
 	const defaultFoil = defaultCard?.foil ? 'Yes' : 'No';
 
