@@ -15,46 +15,44 @@
  * @package magic-decks-and-cards
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
 function mtg_tools_block_init() {
-	register_block_type( __DIR__ . '/build' );
+	register_block_type(__DIR__ . '/build');
 }
-add_action( 'init', 'mtg_tools_block_init' );
+add_action('init', 'mtg_tools_block_init');
 
+/* Frontend Styles */
 function mtg_tools_enqueue_block_assets() {
-	if ( has_block( 'mtg-tools/deck' ) ) {
+	if (has_block('mtg-tools/deck')) {
 		wp_enqueue_style(
 			'mtg-tools-style',
-			plugins_url( 'build/style-index.css', __FILE__ ),
+			plugins_url('build/style-index.css', __FILE__),
 			array(),
-			filemtime( plugin_dir_path( __FILE__ ) . 'build/style-index.css' )
+			filemtime(plugin_dir_path(__FILE__) . 'build/style-index.css')
 		);
-		wp_enqueue_style( 'dashicons' );
-		wp_enqueue_script(
-			'sweetalert2-js',
-			plugins_url( 'assets/libraries/sweetalert2.min.js', __FILE__ ),
-			array(),
-			'11.0.0',
-			true
-		);
+		wp_enqueue_style('dashicons');
+		wp_enqueue_script('popper-js', 'https://unpkg.com/@popperjs/core@2', array(), null, true);
+		wp_enqueue_script('tippy-js', 'https://unpkg.com/tippy.js@6', array('popper-js'), null, true);
+		wp_enqueue_script('tooltips-js', plugin_dir_url(__FILE__) . 'src/tooltips.js', array('tippy-js'), null, true);
 	}
 }
-add_action( 'wp_enqueue_scripts', 'mtg_tools_enqueue_block_assets' );
+add_action('wp_enqueue_scripts', 'mtg_tools_enqueue_block_assets');
 
+/* Backend Styles */
 function mtg_tools_enqueue_block_editor_assets() {
 	wp_enqueue_style(
 		'mtg-tools-editor-styles',
-		plugins_url( 'build/index.css', __FILE__ ),
-		array( 'wp-edit-blocks' ),
-		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.css' )
+		plugins_url('build/index.css', __FILE__),
+		array('wp-edit-blocks'),
+		filemtime(plugin_dir_path(__FILE__) . 'build/index.css')
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'mtg_tools_enqueue_block_editor_assets' );
+add_action('enqueue_block_editor_assets', 'mtg_tools_enqueue_block_editor_assets');
 
-// Tooltip Shortcode
+/* Add shortcode: [mtg_card name="Adeline, Resplendent Cathar" set="mid" number="1"] */
 function mtg_card_shortcode($atts) {
 	$atts = shortcode_atts(
 		array(
@@ -69,12 +67,11 @@ function mtg_card_shortcode($atts) {
 	$name = sanitize_text_field($atts['name']);
 	$set = sanitize_text_field($atts['set']);
 	$number = sanitize_text_field($atts['number']);
-
 	$cache_key = 'mtg_card_' . md5($name . $set . $number);
 	$card_data = get_transient($cache_key);
 
 	if ($card_data === false) {
-		$api_url = "https://api.scryfall.com/cards/named?fuzzy={$name}";
+		$api_url = "https://api.scryfall.com/cards/named?fuzzy={$name}&set={$set}";
 		if (!empty($set) && !empty($number)) {
 			$api_url = "https://api.scryfall.com/cards/{$set}/{$number}";
 		}
@@ -97,9 +94,11 @@ function mtg_card_shortcode($atts) {
 	$scryfall_name = esc_html($card_data['name']);
 	$front_image = esc_url($card_data['image_uris']['normal']);
 
-	ob_start();
+	ob_start(); /* Buffer */
 	?>
-	<span style="text-decoration: underline;" class="mtg-tooltip" data-tippy-content="<?php echo htmlspecialchars('<img src="' . $front_image . '" alt="' . $scryfall_name . '" width="200">'); ?>"><?php echo $scryfall_name; ?></span>
+	<span style="text-decoration: underline;" class="mtg-tooltip" data-tippy-content="<?php echo htmlspecialchars('<img src="' . $front_image . '" alt="' . $scryfall_name . '" width="200">'); ?>">
+		<?php echo $scryfall_name; ?>
+	</span>
 	<?php
 	return ob_get_clean();
 }

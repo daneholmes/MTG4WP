@@ -32,14 +32,19 @@ const renderCardGroup = (type, cards) => {
 					>
 						<span className="mtg-tools-quantity">{card.quantity || 1}</span>
 						<div className="mtg-tools-card-wrapper">
-							<a href={card.scryfall_uri} target="_blank" rel="noopener noreferrer" className="mtg-tools-card-name">
-								{card.scryfallName || card.name}
-							</a>
-							{card.backImage && (
-								<div className="mtg-tools-flip-button">
-									<button className="mtg-tools-flip dashicons dashicons-image-rotate" type="button"></button>
-								</div>
-							)}
+							<div className="mtg-tools-tooltip-wrapper">
+								<p className="mtg-tools-card-name mtg-tooltip" data-tippy-content={`<div class="mtg-tools-tooltip-content">
+									<img src="${card.frontImage || ''}" alt="${card.scryfallName || card.name}" class="mtg-tools-tooltip-image" data-front-image="${card.frontImage}" data-back-image="${card.backImage || ''}"/>
+									${card.backImage ? `<button class="mtg-tools-toggle-image">Show Back</button>` : ''}
+								</div>`}>
+									{card.scryfallName || card.name}
+								</p>
+								{card.backImage && (
+									<div className="mtg-tools-flip-button">
+										<button className="mtg-tools-flip dashicons dashicons-image-rotate" type="button"></button>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
 				))}
@@ -109,18 +114,16 @@ export default function save({ attributes }) {
 		<div {...blockProps} className="mtg-tools-container">
 			<div className="mtg-tools-column mtg-tools-image-column">
 				<div className="mtg-tools-sticky">
-					<div className="mtg-tools-popup-image-wrapper">
-						<img
-							id="mtg-tools-default-image"
-							src={defaultImage}
-							alt={defaultAltText}
-							className="mtg-tools-image"
-							data-foil={defaultFoil}
-						/>
-						{defaultCard?.foil && (
-							<div className="mtg-tools-gradient-overlay"></div>
-						)}
-					</div>
+					<img
+						id="mtg-tools-default-image"
+						src={defaultImage}
+						alt={defaultAltText}
+						className="mtg-tools-image"
+						data-foil={defaultFoil}
+					/>
+					{defaultCard?.foil && (
+						<div className="mtg-tools-gradient-overlay"></div>
+					)}
 				</div>
 
 			</div>

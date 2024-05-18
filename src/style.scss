@@ -2,6 +2,7 @@
 	display: flex;
 	width: 100%;
 	gap: 8px;
+	flex-wrap: wrap;
 }
 
 .mtg-tools-column {
@@ -45,9 +46,11 @@
 	0% {
 		background-position: 0% 50%;
 	}
+
 	50% {
 		background-position: 100% 50%;
 	}
+
 	100% {
 		background-position: 0% 50%;
 	}
@@ -93,8 +96,8 @@
 	text-align: left;
 }
 
-.mtg-tools-card-wrapper {
-	display: block;
+.mtg-tools-tooltip-wrapper {
+	display: inline;
 	flex-grow: 0;
 	flex-shrink: 1;
 	flex-basis: auto;
@@ -102,11 +105,13 @@
 	order: 0;
 }
 
+.mtg-tools-card-wrapper {
+	display: block;
+}
+
 .mtg-tools-card-name {
 	display: inline;
 	gap: 5px;
-	text-decoration: none;
-	cursor: pointer;
 }
 
 .mtg-tools-flip-button {
@@ -114,72 +119,44 @@
 	vertical-align: middle;
 }
 
-.mtg-tools-popup-image-wrapper {
-	position: relative;
+.mtg-tools-tooltip-content {
+	display: inline-block;
+	text-align: center;
 }
 
-.mtg-tools-popup-image {
-	position: relative;
-	max-width: 100%;
+.mtg-tools-tooltip-content img {
+	max-width: 200px;
 	height: auto;
 	display: block;
-	border-radius: 6px;
+	margin: 0 auto 8px;
 }
 
-.mtg-tools-popup-content {
-	padding-top: 32px;
+.mtg-tools-toggle-image {
+	display: inline-block;
+	padding: 4px 8px;
+	margin-top: 4px;
+	background-color: #111;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
-.mtg-tools-popup-flip-button {
-	margin-top: 16px;
+.mtg-tools-toggle-image:hover {
+	background-color: #333;
 }
 
-@media (max-width: 768px) {
+.mtg-tools-card-name .mtg-tooltip[data-tippy-content] {
+	display: none;
+}
+
+@media (max-width: 755px) {
 	.mtg-tools-container {
 		display: flex;
 		flex-direction: column;
-		flex-wrap: nowrap;
-		justify-content: normal;
-		align-items: normal;
-		align-content: normal;
-	}
-
-	.mtg-tools-column {
-		display: block;
-		flex-grow: 0;
-		flex-shrink: 1;
-		flex-basis: auto;
-		align-self: auto;
-		order: 0;
-		padding-top: 0px;
-		padding-bottom: 0px;
 	}
 
 	.mtg-tools-image-column {
 		display: none;
-	}
-
-	.mtg-tools-flip-button {
-		display: none;
-	}
-
-	.mtg-tools-card-name {
-		cursor: pointer;
-	}
-
-	.mtg-tools-gradient-overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(60deg, rgba(255, 107, 107, 0.7), rgba(240, 230, 140, 0.7), rgba(0, 191, 255, 0.7), rgba(50, 205, 50, 0.7));
-		background-size: 400% 400%;
-		mix-blend-mode: overlay;
-		opacity: 0.7;
-		pointer-events: none;
-		z-index: 1;
-		animation: rotateFoilColors 4s linear infinite;
-		border-radius: 6px;
 	}
 }
