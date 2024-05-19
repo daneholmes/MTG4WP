@@ -94,13 +94,11 @@ function mtg_card_shortcode($atts) {
 	$scryfall_name = esc_html($card_data['name']);
 	$front_image = esc_url($card_data['image_uris']['normal']);
 
-	ob_start(); /* Buffer */
-	?>
-	<span style="text-decoration: underline;" class="mtg-tooltip" data-tippy-content="<?php echo htmlspecialchars('<img src="' . $front_image . '" alt="' . $scryfall_name . '" width="200">'); ?>">
-		<?php echo $scryfall_name; ?>
-	</span>
-	<?php
-	return ob_get_clean();
+	$output = '<span class="mtg-tooltip" data-tippy-content="' . htmlspecialchars('<img src="' . $front_image . '" alt="' . $scryfall_name . '" width="200">') . '">';
+	$output .= $scryfall_name;
+	$output .= '</span>';
+
+	return $output;
 }
 add_shortcode('mtg_card', 'mtg_card_shortcode');
 
