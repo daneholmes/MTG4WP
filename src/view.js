@@ -1,5 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
-	document.querySelectorAll('.mtg-tools-container').forEach((deckContainer) => {
+	let tooltipInstances = [];
+
+	const initializeTooltips = () => {
+		// Destroy existing tooltip instances
+		tooltipInstances.forEach(instance => instance.destroy());
+		tooltipInstances = [];
+
+		// Tippy.js tooltips initialization for touchscreens and small screens
+		const isTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+		const isSmallScreen = window.innerWidth < 768;
+
+		if (isTouchScreen || isSmallScreen) {
+			const cardNameElements = document.querySelectorAll('.mtg-tools-card-name');
+
+			cardNameElements.forEach(cardNameElement => {
+				const cardElement = cardNameElement.closest('.mtg-tools-card');
+				const cardFrontImage = cardElement.getAttribute('data-card-front-image-uri');
+				const cardBackImage = cardElement.getAttribute('data-card-back-image-uri');
+				const cardName = cardElement.getAttribute('data-card-name') || 'Magic: The Gathering Card';
+				const isFoil = cardElement.getAttribute('data-card-foil') === 'Yes';
+				let showingBack = false;
+
+				const tooltipContent = document.createElement('div');
+				tooltipContent.innerHTML = `
+					<img src="${cardFrontImage}" alt="${cardName}" class="tooltip-card-image">
+					${cardBackImage ? `<button class="tooltip-flip-button">Show Back</button>` : ''}
+					${isFoil ? '<div class="tooltip-gradient-overlay"></div>' : ''}
+				`;
+
+				if (cardBackImage) {
+					const flipButton = tooltipContent.querySelector('.tooltip-flip-button');
+					flipButton.addEventListener('click', () => {
+						const imgElement = tooltipContent.querySelector('.tooltip-card-image');
+						showingBack = !showingBack;
+						imgElement.src = showingBack ? cardBackImage : cardFrontImage;
+						flipButton.textContent = showingBack ? 'Show Front' : 'Show Back';
+					});
+				}
+
+				const instance = tippy(cardNameElement, {
+					content: tooltipContent,
+					allowHTML: true,
+					interactive: true,
+					placement: 'bottom',
+					followCursor: 'horizontal'
+				});
+				tooltipInstances.push(instance);
+			});
+		}
+	};
+
+	const setupDeckContainer = (deckContainer) => {
 		const defaultImageElement = deckContainer.querySelector('.mtg-tools-image-column .mtg-tools-image');
 		let showingBack = false;
 		let lastHoveredCard = null;
@@ -66,5 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
 				defaultImageElement.src = showingBack ? lastHoveredCard.backImage : lastHoveredCard.frontImage;
 			}
 		});
+	};
+
+	document.querySelectorAll('.mtg-tools-container').forEach((deckContainer) => {
+		setupDeckContainer(deckContainer);
+	});
+
+	initializeTooltips();
+
+	window.addEventListener('resize', () => {
+		initializeTooltips();
 	});
 });

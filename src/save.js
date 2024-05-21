@@ -31,21 +31,12 @@ const renderCardGroup = (type, cards) => {
 						data-card-foil={card.foil ? 'Yes' : 'No'}
 					>
 						<span className="mtg-tools-quantity">{card.quantity || 1}</span>
-						<div className="mtg-tools-card-wrapper">
-							<div className="mtg-tools-tooltip-wrapper">
-								<p className="mtg-tools-card-name mtg-tooltip" data-tippy-content={`<div class="mtg-tools-tooltip-content">
-									<img src="${card.frontImage || ''}" alt="${card.scryfallName || card.name}" class="mtg-tools-tooltip-image" data-front-image="${card.frontImage}" data-back-image="${card.backImage || ''}"/>
-									${card.backImage ? `<button class="mtg-tools-toggle-image">Show Back</button>` : ''}
-								</div>`}>
-									{card.scryfallName || card.name}
-								</p>
-								{card.backImage && (
-									<div className="mtg-tools-flip-button">
-										<button className="mtg-tools-flip dashicons dashicons-image-rotate" type="button"></button>
-									</div>
-								)}
+						<div className="mtg-tools-card-name">{card.scryfallName || card.name}</div>
+						{card.backImage && (
+							<div className="mtg-tools-flip-button">
+								<button className="mtg-tools-flip dashicons dashicons-image-rotate" type="button"></button>
 							</div>
-						</div>
+						)}
 					</div>
 				))}
 			</div>
@@ -125,7 +116,6 @@ export default function save({ attributes }) {
 						<div className="mtg-tools-gradient-overlay"></div>
 					)}
 				</div>
-
 			</div>
 
 			<div className="mtg-tools-column">
