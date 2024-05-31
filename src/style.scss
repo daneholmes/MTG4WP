@@ -11,15 +11,19 @@
 	box-sizing: border-box;
 }
 
-.mtg-tools-sticky {
+.mtg-tools-image-column {
+	position: -webkit-sticky; /* For Safari */
 	position: sticky;
 	top: 20px;
+	align-self: flex-start; /* Ensure the sticky element aligns at the top */
+}
+
+.mtg-tools-sticky {
 	display: block;
 	z-index: 10;
 }
 
 .mtg-tools-image {
-	position: relative;
 	max-width: 100%;
 	height: auto;
 	display: block;
@@ -47,11 +51,9 @@
 	0% {
 		background-position: 0% 50%;
 	}
-
 	50% {
 		background-position: 100% 50%;
 	}
-
 	100% {
 		background-position: 0% 50%;
 	}
