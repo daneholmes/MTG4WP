@@ -77,7 +77,7 @@ export default function save({ attributes }) {
 
 	// Divide unique cards in half
 	const totalCardCount = Object.values(allGroups).reduce((total, group) => total + countCardTypes(group), 0);
-	const halfwayMark = Math.ceil(totalCardCount / 2);
+	const halfOfCards = Math.ceil(totalCardCount / 2);
 
 	// Divide groups into two columns
 	let leftGroups = {};
@@ -87,7 +87,7 @@ export default function save({ attributes }) {
 	for (const [type, group] of Object.entries(allGroups)) {
 		const groupUniqueCount = countCardTypes(group);
 
-		if (currentCardCount + groupUniqueCount <= halfwayMark || Object.keys(leftGroups).length === 0) {
+		if (currentCardCount + groupUniqueCount <= halfOfCards || Object.keys(leftGroups).length === 0) {
 			leftGroups[type] = group;
 			currentCardCount += groupUniqueCount;
 		} else {

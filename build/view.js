@@ -1,1 +1,160 @@
-document.addEventListener("DOMContentLoaded",(()=>{let t=[];const e=()=>{t.forEach((t=>t.destroy())),t=[];const e="ontouchstart"in window||navigator.maxTouchPoints>0,o=window.innerWidth<768;(e||o)&&document.querySelectorAll(".mtg-tools-card-name").forEach((e=>{const o=e.closest(".mtg-tools-card"),a=o.getAttribute("data-card-front-image-uri"),r=o.getAttribute("data-card-back-image-uri"),n=o.getAttribute("data-card-name")||"Magic: The Gathering Card",c="Yes"===o.getAttribute("data-card-foil");let i=!1;const l=document.createElement("div");if(l.innerHTML=`\n\t\t\t\t\t<img src="${a}" alt="${n}" class="tooltip-card-image">\n\t\t\t\t\t${r?'<button class="tooltip-flip-button">Show Back</button>':""}\n\t\t\t\t\t${c?'<div class="tooltip-gradient-overlay"></div>':""}\n\t\t\t\t`,r){const t=l.querySelector(".tooltip-flip-button");t.addEventListener("click",(()=>{const e=l.querySelector(".tooltip-card-image");i=!i,e.src=i?r:a,t.textContent=i?"Show Front":"Show Back"}))}const d=tippy(e,{content:l,allowHTML:!0,interactive:!0,placement:"bottom",followCursor:"horizontal"});t.push(d)}))};document.querySelectorAll(".mtg-tools-container").forEach((t=>{(t=>{const e=t.querySelector(".mtg-tools-image-column .mtg-tools-image");let o=!1,a=null;const r=t=>{const e=t.parentNode.querySelector(".mtg-tools-gradient-overlay");e&&e.remove()},n=t=>{r(t);const e=document.createElement("div");e.className="mtg-tools-gradient-overlay",t.parentNode.style.position="relative",t.parentNode.appendChild(e)};t.querySelectorAll(".mtg-tools-card").forEach((t=>{const c={frontImage:t.getAttribute("data-card-front-image-uri"),backImage:t.getAttribute("data-card-back-image-uri"),name:t.getAttribute("data-card-name")||"Magic: The Gathering Card",scryfallURI:t.querySelector(".mtg-tools-card-name").getAttribute("href"),foil:"Yes"===t.getAttribute("data-card-foil")},i=t.querySelector(".mtg-tools-flip-button button");i&&i.addEventListener("click",(t=>{t.stopPropagation(),o=!o,(t=>{e&&(e.src=o?t.backImage:t.frontImage)})(c)})),t.addEventListener("mouseenter",(()=>{a=c,o=!1,e.src=c.frontImage,c.foil?n(e):r(e)}))})),"Yes"===e.dataset.foil?n(e):r(e),document.addEventListener("mouseleave",(()=>{a&&(e.src=o?a.backImage:a.frontImage)}))})(t)})),e(),window.addEventListener("resize",(()=>{e()}))}));
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/view.js":
+/*!*********************!*\
+  !*** ./src/view.js ***!
+  \*********************/
+/***/ (function() {
+
+document.addEventListener('DOMContentLoaded', () => {
+  let tooltipInstances = [];
+  const initializeTooltips = () => {
+    // Destroy existing tooltip instances
+    tooltipInstances.forEach(instance => instance.destroy());
+    tooltipInstances = [];
+
+    // Tippy.js tooltips initialization for touchscreens and small screens
+    const isTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth < 768;
+    if (isTouchScreen || isSmallScreen) {
+      const cardNameElements = document.querySelectorAll('.mtg-tools-card-name');
+      cardNameElements.forEach(cardNameElement => {
+        const cardElement = cardNameElement.closest('.mtg-tools-card');
+        const cardFrontImage = cardElement.getAttribute('data-card-front-image-uri');
+        const cardBackImage = cardElement.getAttribute('data-card-back-image-uri');
+        const cardName = cardElement.getAttribute('data-card-name') || 'Magic: The Gathering Card';
+        const isFoil = cardElement.getAttribute('data-card-foil') === 'Yes';
+        let showingBack = false;
+        const tooltipContent = document.createElement('div');
+        tooltipContent.innerHTML = `
+					<div class="tooltip-card-wrapper">
+						<div class="tooltip-image-wrapper">
+							<img src="${cardFrontImage}" alt="${cardName}" class="tooltip-card-image">
+							${isFoil ? '<div class="tooltip-gradient-overlay"></div>' : ''}
+						</div>
+						${cardBackImage ? `<button class="tooltip-flip-button wp-element-button">Show Back</button>` : ''}
+					</div>
+				`;
+        if (cardBackImage) {
+          const flipButton = tooltipContent.querySelector('.tooltip-flip-button');
+          flipButton.addEventListener('click', () => {
+            const imgElement = tooltipContent.querySelector('.tooltip-card-image');
+            showingBack = !showingBack;
+            imgElement.src = showingBack ? cardBackImage : cardFrontImage;
+            flipButton.textContent = showingBack ? 'Show Front' : 'Show Back';
+          });
+        }
+        const instance = tippy(cardNameElement, {
+          content: tooltipContent,
+          allowHTML: true,
+          interactive: true,
+          placement: 'bottom',
+          followCursor: 'horizontal'
+        });
+        tooltipInstances.push(instance);
+      });
+    }
+  };
+  const setupDeckContainer = deckContainer => {
+    const defaultImageElement = deckContainer.querySelector('.mtg-tools-image-column .mtg-tools-image');
+    let showingBack = false;
+    let lastHoveredCard = null;
+    const removeGradientOverlay = element => {
+      const existingOverlay = element.parentNode.querySelector('.mtg-tools-gradient-overlay');
+      if (existingOverlay) {
+        existingOverlay.remove();
+      }
+    };
+    const addGradientOverlay = element => {
+      removeGradientOverlay(element);
+      const overlay = document.createElement('div');
+      overlay.className = 'mtg-tools-gradient-overlay';
+      element.parentNode.style.position = 'relative';
+      element.parentNode.appendChild(overlay);
+    };
+    const toggleMainImage = card => {
+      if (defaultImageElement) {
+        defaultImageElement.src = showingBack ? card.backImage : card.frontImage;
+      }
+    };
+    deckContainer.querySelectorAll('.mtg-tools-card').forEach(cardElement => {
+      const card = {
+        frontImage: cardElement.getAttribute('data-card-front-image-uri'),
+        backImage: cardElement.getAttribute('data-card-back-image-uri'),
+        name: cardElement.getAttribute('data-card-name') || 'Magic: The Gathering Card',
+        scryfallURI: cardElement.querySelector('.mtg-tools-card-name').getAttribute('href'),
+        foil: cardElement.getAttribute('data-card-foil') === 'Yes'
+      };
+      const flipButton = cardElement.querySelector('.mtg-tools-flip-button button');
+      if (flipButton) {
+        flipButton.addEventListener('click', event => {
+          event.stopPropagation();
+          showingBack = !showingBack;
+          toggleMainImage(card);
+        });
+      }
+      cardElement.addEventListener('mouseenter', () => {
+        lastHoveredCard = card;
+        showingBack = false;
+        defaultImageElement.src = card.frontImage;
+        if (card.foil) {
+          addGradientOverlay(defaultImageElement);
+        } else {
+          removeGradientOverlay(defaultImageElement);
+        }
+      });
+    });
+    if (defaultImageElement.dataset.foil === 'Yes') {
+      addGradientOverlay(defaultImageElement);
+    } else {
+      removeGradientOverlay(defaultImageElement);
+    }
+    document.addEventListener('mouseleave', () => {
+      if (lastHoveredCard) {
+        defaultImageElement.src = showingBack ? lastHoveredCard.backImage : lastHoveredCard.frontImage;
+      }
+    });
+  };
+  document.querySelectorAll('.mtg-tools-container').forEach(deckContainer => {
+    setupDeckContainer(deckContainer);
+  });
+  initializeTooltips();
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func.apply(this, args);
+      }, wait);
+    };
+  };
+  const handleResize = debounce(() => {
+    const isSmallScreen = window.innerWidth < 768;
+    const tooltipsActive = tooltipInstances.length > 0;
+    if (isSmallScreen && !tooltipsActive || !isSmallScreen && tooltipsActive) {
+      initializeTooltips();
+    }
+  }, 300); // Debounce interval
+
+  const resizeObserver = new ResizeObserver(handleResize);
+  resizeObserver.observe(document.body);
+
+  // Fallback for ResizeObserver edge cases
+  window.addEventListener('resize', handleResize);
+});
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = {};
+/******/ 	__webpack_modules__["./src/view.js"]();
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=view.js.map

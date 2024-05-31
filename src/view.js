@@ -23,9 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 				const tooltipContent = document.createElement('div');
 				tooltipContent.innerHTML = `
-					<img src="${cardFrontImage}" alt="${cardName}" class="tooltip-card-image">
-					${cardBackImage ? `<button class="tooltip-flip-button">Show Back</button>` : ''}
-					${isFoil ? '<div class="tooltip-gradient-overlay"></div>' : ''}
+					<div class="tooltip-card-wrapper">
+						<div class="tooltip-image-wrapper">
+							<img src="${cardFrontImage}" alt="${cardName}" class="tooltip-card-image">
+							${isFoil ? '<div class="tooltip-gradient-overlay"></div>' : ''}
+						</div>
+						${cardBackImage ? `<button class="tooltip-flip-button wp-element-button">Show Back</button>` : ''}
+					</div>
 				`;
 
 				if (cardBackImage) {
@@ -125,7 +129,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	initializeTooltips();
 
-	window.addEventListener('resize', () => {
-		initializeTooltips();
-	});
+	const debounce = (func, wait) => {
+		let timeout;
+		return (...args) => {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				func.apply(this, args);
+			}, wait);
+		};
+	};
+
+	const handleResize = debounce(() => {
+		const isSmallScreen = window.innerWidth < 768;
+		const tooltipsActive = tooltipInstances.length > 0;
+		if ((isSmallScreen && !tooltipsActive) || (!isSmallScreen && tooltipsActive)) {
+			initializeTooltips();
+		}
+	}, 300); // Debounce interval
+
+	const resizeObserver = new ResizeObserver(handleResize);
+	resizeObserver.observe(document.body);
+
+	// Fallback for ResizeObserver edge cases
+	window.addEventListener('resize', handleResize);
 });

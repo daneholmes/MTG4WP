@@ -26,18 +26,16 @@ add_action('init', 'mtg_tools_block_init');
 
 /* Frontend Styles */
 function mtg_tools_enqueue_block_assets() {
-	if (has_block('mtg-tools/deck')) {
-		wp_enqueue_style(
-			'mtg-tools-style',
-			plugins_url('build/style-index.css', __FILE__),
-			array(),
-			filemtime(plugin_dir_path(__FILE__) . 'build/style-index.css')
-		);
-		wp_enqueue_style('dashicons');
-		wp_enqueue_script('popper-js', 'https://unpkg.com/@popperjs/core@2', array(), null, true);
-		wp_enqueue_script('tippy-js', 'https://unpkg.com/tippy.js@6', array('popper-js'), null, true);
-		wp_enqueue_script('tooltips-js', plugin_dir_url(__FILE__) . 'src/tooltips.js', array('tippy-js'), null, true);
-	}
+	wp_enqueue_style(
+		'mtg-tools-style',
+		plugins_url('build/style-index.css', __FILE__),
+		array(),
+		filemtime(plugin_dir_path(__FILE__) . 'build/style-index.css')
+	);
+	wp_enqueue_style('dashicons');
+	wp_enqueue_script('popper-js', 'https://unpkg.com/@popperjs/core@2', array(), null, true);
+	wp_enqueue_script('tippy-js', 'https://unpkg.com/tippy.js@6', array('popper-js'), null, true);
+	wp_enqueue_script('tooltips-js', plugin_dir_url(__FILE__) . 'src/tooltips.js', array('tippy-js'), null, true);
 }
 add_action('wp_enqueue_scripts', 'mtg_tools_enqueue_block_assets');
 
@@ -101,12 +99,4 @@ function mtg_card_shortcode($atts) {
 	return $output;
 }
 add_shortcode('mtg_card', 'mtg_card_shortcode');
-
-function enqueue_tippy_js() {
-	wp_enqueue_script('popper-js', 'https://unpkg.com/@popperjs/core@2', array(), null, true);
-	wp_enqueue_script('tippy-js', 'https://unpkg.com/tippy.js@6', array('popper-js'), null, true);
-	wp_enqueue_script('tooltips-js', plugin_dir_url(__FILE__) . 'src/tooltips.js', array('tippy-js'), null, true);
-}
-add_action('wp_enqueue_scripts', 'enqueue_tippy_js');
-
 ?>
