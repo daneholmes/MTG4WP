@@ -73,7 +73,7 @@ export default function save({ attributes }) {
 	const allGroups = {
 		Commander: commanderCards,
 		...groupedCards,
-		Token: cards.filter((card) => card.type === 'Token' && !card.commander).sort(sortByCmcThenName),
+		Tokens: cards.filter((card) => card.type === 'Token' && !card.commander).sort(sortByCmcThenName),
 	};
 
 	// Divide unique cards in half
