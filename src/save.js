@@ -69,10 +69,11 @@ export default function save({ attributes }) {
 		return acc;
 	}, {});
 
-	// Add commander to start of groups
+	// Add commander to start of groups and token to end
 	const allGroups = {
 		Commander: commanderCards,
 		...groupedCards,
+		Token: cards.filter((card) => card.type === 'Token' && !card.commander).sort(sortByCmcThenName),
 	};
 
 	// Divide unique cards in half

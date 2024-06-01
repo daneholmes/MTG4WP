@@ -12,7 +12,7 @@ export default function Edit({ attributes, setAttributes }) {
 	const [isLoading, setIsLoading] = useState(false);
 	const debounceTimeout = useRef(null);
 
-	const typePriority = ['Creature', 'Land', 'Artifact', 'Enchantment', 'Planeswalker', 'Battle', 'Instant', 'Sorcery'];
+	const typePriority = ['Token', 'Creature', 'Land', 'Artifact', 'Enchantment', 'Planeswalker', 'Battle', 'Instant', 'Sorcery'];
 
 	// Prioritize card types
 	const prioritizeType = (types) => {
