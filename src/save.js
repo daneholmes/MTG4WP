@@ -53,48 +53,57 @@ export default function save({ attributes }) {
 
 	// Define groups
 	const typePriority = [
-		{ type: 'Artifacts', condition: (card) => card.type === 'Artifact' && !card.commander },
-		{ type: 'Battles', condition: (card) => card.type === 'Battle' && !card.commander },
-		{ type: 'Creatures', condition: (card) => card.type === 'Creature' && !card.commander },
-		{ type: 'Planeswalkers', condition: (card) => card.type === 'Planeswalker' && !card.commander },
-		{ type: 'Enchantments', condition: (card) => card.type === 'Enchantment' && !card.commander },
-		{ type: 'Instants', condition: (card) => card.type === 'Instant' && !card.commander },
-		{ type: 'Sorceries', condition: (card) => card.type === 'Sorcery' && !card.commander },
-		{ type: 'Lands', condition: (card) => card.type === 'Land' && !card.commander },
+	  { type: 'Artifacts', condition: (card) => card.type === 'Artifact' && !card.commander },
+	  { type: 'Battles', condition: (card) => card.type === 'Battle' && !card.commander },
+	  { type: 'Creatures', condition: (card) => card.type === 'Creature' && !card.commander },
+	  { type: 'Planeswalkers', condition: (card) => card.type === 'Planeswalker' && !card.commander },
+	  { type: 'Enchantments', condition: (card) => card.type === 'Enchantment' && !card.commander },
+	  { type: 'Instants', condition: (card) => card.type === 'Instant' && !card.commander },
+	  { type: 'Sorceries', condition: (card) => card.type === 'Sorcery' && !card.commander },
+	  { type: 'Lands', condition: (card) => card.type === 'Land' && !card.commander },
 	];
 
 	// Sort groups
 	const groupedCards = typePriority.reduce((acc, group) => {
-		acc[group.type] = cards.filter(group.condition).sort(sortByCmcThenName);
-		return acc;
+	  acc[group.type] = cards.filter(group.condition).sort(sortByCmcThenName);
+	  return acc;
 	}, {});
 
 	// Add commander to start of groups and token to end
 	const allGroups = {
-		Commander: commanderCards,
-		...groupedCards,
-		Tokens: cards.filter((card) => card.type === 'Token' && !card.commander).sort(sortByCmcThenName),
+	  Commander: commanderCards,
+	  ...groupedCards,
+	  Tokens: cards.filter((card) => card.type === 'Token' && !card.commander).sort(sortByCmcThenName),
 	};
 
-	// Divide unique cards in half
+	// Count the total number of unique cards in each group
+	const countCardTypes = (group) => group.length;
+
 	const totalCardCount = Object.values(allGroups).reduce((total, group) => total + countCardTypes(group), 0);
 	const halfOfCards = Math.ceil(totalCardCount / 2);
 
 	// Divide groups into two columns
-	let leftGroups = {};
+	let leftGroups = { Commander: allGroups.Commander };
 	let rightGroups = {};
-	let currentCardCount = 0;
+	let currentCardCount = countCardTypes(allGroups.Commander);
 
+	delete allGroups.Commander;
+
+	// Balance the groups evenly between columns
 	for (const [type, group] of Object.entries(allGroups)) {
+	  if (type !== 'Tokens') {
 		const groupUniqueCount = countCardTypes(group);
-
-		if (currentCardCount + groupUniqueCount <= halfOfCards || Object.keys(leftGroups).length === 0) {
-			leftGroups[type] = group;
-			currentCardCount += groupUniqueCount;
+		if (currentCardCount + groupUniqueCount <= halfOfCards) {
+		  leftGroups[type] = group;
+		  currentCardCount += groupUniqueCount;
 		} else {
-			rightGroups[type] = group;
+		  rightGroups[type] = group;
 		}
+	  }
 	}
+
+	// Ensure tokens are at the bottom of the right column
+	rightGroups['Tokens'] = allGroups.Tokens;
 
 	// Get the default image
 	const defaultCard = commanderCards[0] || Object.values(groupedCards).flat()[0];
