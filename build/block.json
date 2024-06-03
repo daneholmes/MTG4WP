@@ -24,7 +24,8 @@
           "number": "",
           "quantity": 1,
           "commander": false,
-          "foil": false
+          "foil": false,
+          "sideboard": false
         }
       ],
       "items": {
@@ -46,6 +47,9 @@
             "type": "boolean"
           },
           "foil": {
+            "type": "boolean"
+          },
+          "sideboard": {
             "type": "boolean"
           }
         }

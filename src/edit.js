@@ -136,7 +136,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	// Add new card template
 	const addCard = () => {
-		const newCard = { name: '', set: '', number: '', quantity: 1, commander: false, foil: false };
+		const newCard = { name: '', set: '', number: '', quantity: 1, commander: false, foil: false, sideboard: false };
 		setCards([...cards, newCard]);
 		setAttributes({ cards: [...cards, newCard] });
 	};
@@ -184,6 +184,11 @@ export default function Edit({ attributes, setAttributes }) {
 							label={__('Foil', 'mtg-tools')}
 							checked={card.foil}
 							onChange={(value) => updateCard(index, 'foil', value)}
+						/>
+						<CheckboxControl
+							label={__('Sideboard', 'mtg-tools')}
+							checked={card.Sideboard}
+							onChange={(value) => updateCard(index, 'sideboard', value)}
 						/>
 					</div>
 					<div className="card-preview">
