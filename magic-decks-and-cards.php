@@ -100,8 +100,6 @@ function mtg_card_shortcode($atts) {
 }
 add_shortcode('mtg_card', 'mtg_card_shortcode');
 
-<?php
-// Define the shortcode function
 function symbol_shortcode($atts) {
 	// Extract the attributes passed to the shortcode, if any
 	$atts = shortcode_atts(array(
