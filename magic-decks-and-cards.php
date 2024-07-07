@@ -131,10 +131,10 @@ function symbol_shortcode($atts) {
 			$output = '<i class="ms ms-c ms-cost"></i>';
 			break;
 		case 'tap':
-			$output = '<i class="tap"></i>';
+			$output = '<i class="ms ms-tap"></i>';
 			break;
 		case 'untap':
-			$output = '<i class="untap"></i>';
+			$output = '<i class="ms ms-untap"></i>';
 			break;
 		default:
 			$output = ' ';
