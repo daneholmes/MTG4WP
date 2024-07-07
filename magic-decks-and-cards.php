@@ -100,9 +100,59 @@ function mtg_card_shortcode($atts) {
 }
 add_shortcode('mtg_card', 'mtg_card_shortcode');
 
-function enqueue_mana_font() {
-	wp_enqueue_style( 'mana-font', '//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css', array(), null );
+<?php
+// Define the shortcode function
+function symbol_shortcode($atts) {
+	// Extract the attributes passed to the shortcode, if any
+	$atts = shortcode_atts(array(
+		'type' => 'default', // Default value for 'type' attribute
+	), $atts, 'symbol');
+
+	// Process the attributes or generate output
+	$symbol_type = esc_attr($atts['type']);
+	$output = '';
+
+	// HTML for the mana symbols based on the symbol type
+	switch ($symbol_type) {
+		case 'blue':
+			$output = '<i class="ms ms-u ms-cost"></i>';
+			break;
+		case 'red':
+			$output = '<i class="ms ms-r ms-cost"></i>';
+			break;
+		case 'green':
+			$output = '<i class="ms ms-g ms-cost"></i>';
+			break;
+		case 'black':
+			$output = '<i class="ms ms-b ms-cost"></i>';
+			break;
+		case 'white':
+			$output = '<i class="ms ms-w ms-cost"></i>';
+			break;
+		case 'colorless':
+			$output = '<i class="ms ms-c ms-cost"></i>';
+			break;
+		case 'tap':
+			$output = '<i class="tap"></i>';
+			break;
+		case 'untap':
+			$output = '<i class="untap"></i>';
+			break;
+		default:
+			$output = ' ';
+			break;
+	}
+
+	return $output;
 }
-add_action( 'wp_enqueue_scripts', 'enqueue_mana_font' );
+
+// Register the shortcode
+add_shortcode('symbol', 'symbol_shortcode');
+
+// Enqueue the external stylesheet for mana symbols
+function enqueue_mana_styles() {
+	wp_enqueue_style('mana-styles', '//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css');
+}
+add_action('wp_enqueue_scripts', 'enqueue_mana_styles');
 
 ?>
