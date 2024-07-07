@@ -99,4 +99,10 @@ function mtg_card_shortcode($atts) {
 	return $output;
 }
 add_shortcode('mtg_card', 'mtg_card_shortcode');
+
+function enqueue_mana_font() {
+	wp_enqueue_style( 'mana-font', '//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css', array(), null );
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_mana_font' );
+
 ?>
