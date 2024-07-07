@@ -130,6 +130,21 @@ function symbol_shortcode($atts) {
 		case 'colorless':
 			$output = '<i class="ms ms-c ms-cost"></i>';
 			break;
+		case '1':
+			$output = '<i class="ms ms-1 ms-cost"></i>';
+			break;
+		case '2':
+			$output = '<i class="ms ms-2 ms-cost"></i>';
+			break;
+		case '3':
+			$output = '<i class="ms ms-3 ms-cost"></i>';
+			break;
+		case '4':
+			$output = '<i class="ms ms-4 ms-cost"></i>';
+			break;
+		case '5':
+			$output = '<i class="ms ms-5 ms-cost"></i>';
+			break;
 		case 'tap':
 			$output = '<i class="ms ms-tap"></i>';
 			break;
