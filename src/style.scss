@@ -27,7 +27,7 @@
 	max-width: 100%;
 	height: auto;
 	display: block;
-	border-radius: 6px;
+	border-radius: 11px;
 }
 
 .mtg-tooltip {
@@ -48,7 +48,7 @@
 	pointer-events: none;
 	z-index: 1;
 	animation: rotateFoilColors 4s linear infinite;
-	border-radius: 6px;
+	border-radius: 11px;
 	box-sizing: border-box;
 }
 
@@ -130,7 +130,7 @@
 .tooltip-card-image {
 	max-width: 200px;
 	height: auto;
-	border-radius: 6px;
+	border-radius: 11px;
 	display: block;
 }
 
@@ -147,7 +147,7 @@
 	pointer-events: none;
 	z-index: 1;
 	animation: rotateFoilColors 4s linear infinite;
-	border-radius: 6px;
+	border-radius: 11px;
 }
 
 .tooltip-flip-button {
@@ -175,4 +175,8 @@
 
 .ms-cost {
 	font-size: 0.7em;
+}
+
+.tippy-box {
+	background-color: none;
 }
