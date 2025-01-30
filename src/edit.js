@@ -16,6 +16,7 @@ import {
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
+import DeckImporter from './components/importer';
 
 const Edit = ({ attributes, setAttributes }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +25,7 @@ const Edit = ({ attributes, setAttributes }) => {
     const [searching, setSearching] = useState(false);
     const [error, setError] = useState('');
     const [imageLoading, setImageLoading] = useState({});
+    const [showImporter, setShowImporter] = useState(false);
     const { deck } = attributes;
 
     const searchCard = async () => {
@@ -45,7 +47,6 @@ const Edit = ({ attributes, setAttributes }) => {
                 throw new Error('Card not found');
             }
             
-            // Validate required card properties
             const isValidCard = response.id && 
                               response.name && 
                               response.faces[0] && 
@@ -60,7 +61,6 @@ const Edit = ({ attributes, setAttributes }) => {
                 deck: [...deck, response]
             });
             
-            // Reset search fields
             setSearchTerm('');
             setSearchSet('');
             setSearchNumber('');
@@ -126,7 +126,6 @@ const Edit = ({ attributes, setAttributes }) => {
                 data: {
                     cards: deck.map(card => ({
                         ...card,
-                        // Ensure all required fields are present
                         type_line: card.faces?.[0]?.type_line || '',
                         cmc: card.faces?.[0]?.cmc || 0
                     })),
@@ -177,14 +176,22 @@ const Edit = ({ attributes, setAttributes }) => {
                         onChange={setSearchNumber}
                         help={__('e.g. 61, 11, 7', 'mtg4wp')}
                     />
-                    <Button 
-                        variant="primary"
-                        onClick={searchCard}
-                        isBusy={searching}
-                        disabled={searching || (!searchTerm && (!searchSet || !searchNumber))}
-                    >
-                        {__('Add Card', 'mtg4wp')}
-                    </Button>
+                    <div className="mtg4wp-search-buttons">
+                        <Button 
+                            variant="primary"
+                            onClick={searchCard}
+                            isBusy={searching}
+                            disabled={searching || (!searchTerm && (!searchSet || !searchNumber))}
+                        >
+                            {__('Add Card', 'mtg4wp')}
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setShowImporter(true)}
+                        >
+                            {__('Import Deck', 'mtg4wp')}
+                        </Button>
+                    </div>
                     {error && (
                         <Notice 
                             status="error" 
@@ -294,6 +301,17 @@ const Edit = ({ attributes, setAttributes }) => {
                     })}
                 </div>
             </div>
+
+            {showImporter && (
+                <DeckImporter
+                    onImport={(importedCards) => {
+                        setAttributes({
+                            deck: [...deck, ...importedCards]
+                        });
+                    }}
+                    onClose={() => setShowImporter(false)}
+                />
+            )}
         </div>
     );
 };

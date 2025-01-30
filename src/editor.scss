@@ -5,7 +5,9 @@
         background: #f0f0f1;
         border-radius: 2px;
 
-        .components-button {
+        .mtg4wp-search-buttons {
+            display: flex;
+            gap: 8px;
             margin-top: 1em;
         }
     }
@@ -125,6 +127,44 @@
 
     .mtg4wp-empty-notice {
         margin: 2em 0;
+    }
+}
+
+.mtg4wp-importer {
+    min-width: 500px;
+    
+    .components-textarea-control__input {
+        font-family: monospace;
+        font-size: 14px;
+    }
+
+    .mtg4wp-import-errors {
+        margin: 1em 0;
+
+        ul {
+            margin: 0.5em 0 0;
+            padding-left: 1em;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+
+            code {
+                display: block;
+                margin-top: 0.25em;
+                padding: 0.25em 0.5em;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 2px;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .mtg4wp-importer-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 1em;
     }
 }
 
