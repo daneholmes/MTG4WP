@@ -41,14 +41,25 @@ const Edit = ({ attributes, setAttributes }) => {
                 }
             });
 
-            if (response === null) {
+            if (!response || !response.faces || !response.faces.length) {
                 throw new Error('Card not found');
             }
-
+            
+            // Validate required card properties
+            const isValidCard = response.id && 
+                              response.name && 
+                              response.faces[0] && 
+                              response.faces[0].name &&
+                              response.faces[0].type_line;
+            
+            if (!isValidCard) {
+                throw new Error('Invalid card data received');
+            }
+            
             setAttributes({
-                deck: [...deck, response]  // The API now returns the fully formed card object
+                deck: [...deck, response]
             });
-
+            
             // Reset search fields
             setSearchTerm('');
             setSearchSet('');
@@ -57,7 +68,7 @@ const Edit = ({ attributes, setAttributes }) => {
             setError(
                 err.message === 'Card not found' 
                     ? __('Card not found. Please verify the card name, set code, or collector number.', 'mtg4wp')
-                    : __('Error finding card. Please try again later.', 'mtg4wp')
+                    : __('Error finding card. Please try again.', 'mtg4wp')
             );
             console.error('MTG4WP Error:', err);
         } finally {
@@ -206,19 +217,22 @@ const Edit = ({ attributes, setAttributes }) => {
                                         <div className="mtg4wp-card-image">
                                             {currentFace.image && (
                                                 <>
-                                                    <img 
-                                                        src={currentFace.image}
-                                                        alt={currentFace.name}
-                                                        width="146" 
-                                                        height="204"
-                                                        className={`mtg4wp-card-img ${card.foil ? 'foil' : ''}`}
-                                                        onLoad={() => setImageLoading(prev => ({...prev, [index]: false}))}
-                                                        style={{ display: imageLoading[index] ? 'none' : 'block' }}
-                                                        onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            setError(__('Error loading card image. Please try again.', 'mtg4wp'));
-                                                        }}
-                                                    />
+                                                    <div className="mtg4wp-card-container">
+                                                        <img 
+                                                            src={currentFace.image}
+                                                            alt={currentFace.name}
+                                                            width="146" 
+                                                            height="204"
+                                                            className={`mtg4wp-card-img ${card.foil ? 'foil' : ''}`}
+                                                            onLoad={() => setImageLoading(prev => ({...prev, [index]: false}))}
+                                                            style={{ display: imageLoading[index] ? 'none' : 'block' }}
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                setError(__('Error loading card image. Please try again.', 'mtg4wp'));
+                                                            }}
+                                                        />
+                                                        {card.foil && <div className="foil-overlay" />}
+                                                    </div>
                                                     {imageLoading[index] && (
                                                         <div className="mtg4wp-card-loading">
                                                             <Spinner />

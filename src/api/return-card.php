@@ -52,7 +52,22 @@ class Return_Card {
         return null;
     }
 
+    private function validate_card_data($card_data) {
+        if (!is_array($card_data) || 
+            empty($card_data['id']) || 
+            empty($card_data['name']) || 
+            empty($card_data['set']) || 
+            empty($card_data['collector_number'])) {
+            return false;
+        }
+        return true;
+    }
+    
     private function transform_card_data($card_data) {
+        if (!$this->validate_card_data($card_data)) {
+            return null;
+        }
+    
         $transformed = [
             'id' => $card_data['id'],
             'name' => $card_data['name'],
@@ -61,7 +76,6 @@ class Return_Card {
             'rarity' => $card_data['rarity'],
             'layout' => $card_data['layout'],
             'isDoubleFaced' => false,
-            // Default values for editor
             'quantity' => 1,
             'foil' => false,
             'section' => 'mainboard',
@@ -69,7 +83,7 @@ class Return_Card {
             'faces' => []
         ];
 
-        // Handle different card layouts
+        // Different card layouts
         switch ($card_data['layout']) {
             case 'transform':
             case 'modal_dfc':

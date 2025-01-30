@@ -60,7 +60,7 @@ class Sort_Card {
     }
 
     private function sort_cards_by_section($cards) {
-        // First, group cards by section
+        // Group cards by section
         $sections = [];
         foreach ($cards as $card) {
             $section = $card['section'] ?? 'mainboard';
@@ -126,14 +126,14 @@ class Sort_Card {
             return $a_type_order - $b_type_order;
         }
 
-        // Then sort by CMC
+        // Sort by CMC
         $a_cmc = $this->get_cmc($a);
         $b_cmc = $this->get_cmc($b);
         if ($a_cmc !== $b_cmc) {
             return $a_cmc - $b_cmc;
         }
 
-        // Finally sort alphabetically
+        // Sort alphabetically
         return strcmp($a['name'], $b['name']);
     }
 
@@ -177,7 +177,7 @@ class Sort_Card {
     private function get_cmc($card) {
         $cmc = $card['cmc'] ?? 0;
         
-        // If we don't have CMC, try to calculate it from mana_cost
+        // Calculate CMC from mana_cost
         if (!$cmc && isset($card['faces'][0]['mana_cost'])) {
             $mana_cost = $card['faces'][0]['mana_cost'];
             preg_match_all('/\{([^}]+)\}/', $mana_cost, $matches);

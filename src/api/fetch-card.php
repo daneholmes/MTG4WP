@@ -64,9 +64,9 @@ class Fetch_Card {
     
     private function validate_search_params($card_name, $set, $number) {
         return (
-            (!empty($card_name) && empty($set) && empty($number)) || // Just card name
-            (!empty($set) && !empty($number)) || // Set and number
-            (!empty($card_name) && !empty($set)) // Card name and set
+            (!empty($card_name) && empty($set) && empty($number)) ||
+            (!empty($set) && !empty($number)) ||
+            (!empty($card_name) && !empty($set))
         );
     }
 

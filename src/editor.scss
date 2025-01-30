@@ -24,7 +24,13 @@
             width: 146px;
             position: relative;
             
-            img.mtg4wp-card-img {
+            .mtg4wp-card-container {
+                position: relative;
+                width: 146px;
+                height: 204px;
+            }
+
+            .mtg4wp-card-img {
                 width: 100%;
                 height: auto;
                 border-radius: 4.75% / 3.5%;
@@ -32,30 +38,28 @@
                 transition: transform 0.3s ease;
             }
 
-            // Foil effect wrapper
-            .mtg4wp-card-img.foil {
-                position: relative;
-
-                &::after {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    border-radius: 4.75% / 3.5%;
-                    background: linear-gradient(
-                        125deg,
-                        rgba(255, 255, 255, 0) 0%,
-                        rgba(255, 255, 255, 0.1) 10%,
-                        rgba(255, 255, 255, 0.3) 20%,
-                        rgba(255, 255, 255, 0.5) 30%,
-                        rgba(255, 255, 255, 0.3) 40%,
-                        rgba(255, 255, 255, 0.1) 50%,
-                        rgba(255, 255, 255, 0) 60%
-                    );
-                    background-size: 400% 400%;
-                    mix-blend-mode: overlay;
-                    pointer-events: none;
-                    animation: foilShimmer 3s ease infinite;
-                }
+            .foil-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 4.75% / 3.5%;
+                background: linear-gradient(
+                    125deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.2) 10%,
+                    rgba(255, 255, 255, 0.4) 20%,
+                    rgba(255, 255, 255, 0.6) 30%,
+                    rgba(255, 255, 255, 0.4) 40%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0) 60%
+                );
+                background-size: 400% 400%;
+                mix-blend-mode: overlay;
+                pointer-events: none;
+                animation: foilShimmer 3s ease infinite;
+                z-index: 1;
             }
 
             .mtg4wp-card-loading {
@@ -115,9 +119,12 @@
         }
     }
 
-    .mtg4wp-error {
-        color: #cc1818;
-        margin-top: 0.5em;
+    .mtg4wp-error-notice {
+        margin-top: 1em;
+    }
+
+    .mtg4wp-empty-notice {
+        margin: 2em 0;
     }
 }
 
