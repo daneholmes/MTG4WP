@@ -19,32 +19,6 @@ A plugin for displaying Magic: The Gathering© on Wordpress.
 1. Upload the plugin files to the `/wp-content/plugins/mtg-tools` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 
-## File Structure and High-Level Descriptions
-
-MTG4WP/
-├── MTG4WP.php                  # Registers block & enqueues assets
-├── readme.md                   # Plugin documentation
-│
-├── src/
-│   ├── block.json              # Deck block configuration
-│   ├── index.js                # Block registration
-│   ├── edit.js                 # Block design and state management
-│   ├── save.js                 # Renders block
-│   ├── editor.scss             # Backend styles
-│   ├── style.scss              # Frontend styles
-│   │
-│   ├── components/
-│   │   ├── deck-editor.js      # Individual card input/editing
-│   │   ├── card-list.js        # Displays list of cards in editor
-│   │   └── card-preview.js     # Card preview component
-│   │
-│   └── api/
-│       ├── fetch-card.php      # Scryfall API
-│       ├── return-card.php     # Card caching
-│       └── sort-card.php       # Card tagging and sorting within deck
-│
-└── package.json                # NPM dependencies and build scripts
-
 ## Frequently Asked Questions
 
 **How do I add a deck?**
