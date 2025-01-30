@@ -1,62 +1,42 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "mtg-tools/mtg-tools",
-	"version": "1.0.0",
-	"title": "Deck",
-	"category": "widgets",
-	"icon": "list-view",
-	"description": "A plugin for displaying Magic: The Gathering cards on WordPress",
-	"example": {},
-	"supports": {
-		"html": false,
-		"anchor": true,
-		"align": true,
-		"multiple": true
-	},
-	"attributes": {
-		"cards": {
-			"type": "array",
-			"default": [{
-				"name": "",
-				"set": "",
-				"number": "",
-				"quantity": 1,
-				"commander": false,
-				"foil": false,
-				"sideboard": false
-			}],
-			"items": {
-				"type": "object",
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"set": {
-						"type": "string"
-					},
-					"number": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number"
-					},
-					"commander": {
-						"type": "boolean"
-					},
-					"foil": {
-						"type": "boolean"
-					},
-					"sideboard": {
-						"type": "boolean"
-					}
-				}
-			}
-		}
-	},
-	"textdomain": "mtg-tools",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
-	"viewScript": "file:./view.js"
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "mtg4wp/deck",
+    "version": "2.0.0",
+    "title": "Deck",
+    "category": "widgets",
+    "icon": "list-view",
+    "description": "Add a Magic deck.",
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "align": true,
+        "multiple": true
+    },
+    "attributes": {
+        "deck": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" },
+                    "set": { "type": "string" },
+                    "number": { "type": "string" },
+                    "quantity": { "type": "number" },
+                    "foil": { "type": "boolean" },
+                    "section": { 
+                       "type": "string",
+                       "enum": ["commander", "mainboard", "sideboard", "maybeboard", "token"]
+                    }
+                },
+                "required": ["name", "quantity", "foil", "section"]
+            }
+        }
+    },
+    "textdomain": "MTG4WP",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScript": "file:./view.js"
 }

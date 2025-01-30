@@ -1,13 +1,12 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "mtg-tools/mtg-tools",
-  "version": "1.0.0",
+  "name": "mtg4wp/deck",
+  "version": "2.0.0",
   "title": "Deck",
   "category": "widgets",
   "icon": "list-view",
-  "description": "A plugin for displaying Magic: The Gathering cards on WordPress",
-  "example": {},
+  "description": "Add a Magic deck.",
   "supports": {
     "html": false,
     "anchor": true,
@@ -15,19 +14,9 @@
     "multiple": true
   },
   "attributes": {
-    "cards": {
+    "deck": {
       "type": "array",
-      "default": [
-        {
-          "name": "",
-          "set": "",
-          "number": "",
-          "quantity": 1,
-          "commander": false,
-          "foil": false,
-          "sideboard": false
-        }
-      ],
+      "default": [],
       "items": {
         "type": "object",
         "properties": {
@@ -43,20 +32,30 @@
           "quantity": {
             "type": "number"
           },
-          "commander": {
-            "type": "boolean"
-          },
           "foil": {
             "type": "boolean"
           },
-          "sideboard": {
-            "type": "boolean"
+          "section": {
+            "type": "string",
+            "enum": [
+              "commander",
+              "mainboard",
+              "sideboard",
+              "maybeboard",
+              "token"
+            ]
           }
-        }
+        },
+        "required": [
+          "name",
+          "quantity",
+          "foil",
+          "section"
+        ]
       }
     }
   },
-  "textdomain": "mtg-tools",
+  "textdomain": "MTG4WP",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

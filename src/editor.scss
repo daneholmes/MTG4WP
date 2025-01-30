@@ -1,50 +1,134 @@
-.mtg-card {
-	display: flex;
-	align-items: flex-start;
-	margin-bottom: 20px;
+.mtg4wp-editor {
+    .mtg4wp-search {
+        margin-bottom: 2em;
+        padding: 1em;
+        background: #f0f0f1;
+        border-radius: 2px;
+
+        .components-button {
+            margin-top: 1em;
+        }
+    }
+
+    .mtg4wp-card {
+        margin-bottom: 1em;
+
+        .mtg4wp-card-layout {
+            display: flex;
+            gap: 1em;
+            align-items: flex-start;
+        }
+
+        .mtg4wp-card-image {
+            flex-shrink: 0;
+            width: 146px;
+            position: relative;
+            
+            img.mtg4wp-card-img {
+                width: 100%;
+                height: auto;
+                border-radius: 4.75% / 3.5%;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+            }
+
+            // Foil effect wrapper
+            .mtg4wp-card-img.foil {
+                position: relative;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 4.75% / 3.5%;
+                    background: linear-gradient(
+                        125deg,
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(255, 255, 255, 0.1) 10%,
+                        rgba(255, 255, 255, 0.3) 20%,
+                        rgba(255, 255, 255, 0.5) 30%,
+                        rgba(255, 255, 255, 0.3) 40%,
+                        rgba(255, 255, 255, 0.1) 50%,
+                        rgba(255, 255, 255, 0) 60%
+                    );
+                    background-size: 400% 400%;
+                    mix-blend-mode: overlay;
+                    pointer-events: none;
+                    animation: foilShimmer 3s ease infinite;
+                }
+            }
+
+            .mtg4wp-card-loading {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f0f0f1;
+                border-radius: 4.75% / 3.5%;
+            }
+
+            .mtg4wp-card-flip {
+                position: absolute;
+                bottom: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 4px 8px;
+                font-size: 12px;
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid #ddd;
+                
+                &:hover {
+                    background: white;
+                }
+            }
+        }
+
+        .mtg4wp-card-content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .mtg4wp-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1em;
+
+            h4 {
+                margin: 0;
+                font-size: 1.1em;
+            }
+        }
+
+        .mtg4wp-card-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1em;
+
+            .components-base-control {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .mtg4wp-error {
+        color: #cc1818;
+        margin-top: 0.5em;
+    }
 }
 
-.card-inputs {
-	flex: 1;
-}
-
-.card-preview {
-	width: 150px;
-	height: 210px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-left: 20px;
-	border: 1px solid #ccc;
-	background-color: #f9f9f9;
-	flex-shrink: 0;
-}
-
-.not-found,
-.placeholder {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 14px;
-	color: #999;
-}
-
-.card-preview img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.mtg-card+.mtg-card {
-	margin-top: 20px;
-}
-
-.components-text-control__input {
-	box-sizing: border-box;
-}
-
-button.components-button {
-	margin-top: 10px;
+@keyframes foilShimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }

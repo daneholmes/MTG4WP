@@ -1,209 +1,287 @@
-import { useState, useEffect, useRef } from '@wordpress/element';
-import { Button, TextControl, CheckboxControl } from '@wordpress/components';
-import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
-import './editor.scss';
+import { useBlockProps } from '@wordpress/block-editor';
+import { useState } from '@wordpress/element';
+import {
+    TextControl,
+    Button,
+    SelectControl,
+    PanelBody,
+    PanelRow,
+    ToggleControl,
+    Card,
+    CardBody,
+    Spinner,
+    __experimentalNumberControl as NumberControl,
+    Notice
+} from '@wordpress/components';
+import { InspectorControls } from '@wordpress/block-editor';
+import apiFetch from '@wordpress/api-fetch';
 
-const fetchCardDataCache = {};
+const Edit = ({ attributes, setAttributes }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchSet, setSearchSet] = useState('');
+    const [searchNumber, setSearchNumber] = useState('');
+    const [searching, setSearching] = useState(false);
+    const [error, setError] = useState('');
+    const [imageLoading, setImageLoading] = useState({});
+    const { deck } = attributes;
 
-export default function Edit({ attributes, setAttributes }) {
-	const blockProps = useBlockProps();
-	const [cards, setCards] = useState(attributes.cards || []);
-	const [isLoading, setIsLoading] = useState(false);
-	const debounceTimeout = useRef(null);
+    const searchCard = async () => {
+        setSearching(true);
+        setError('');
+        
+        try {
+            const response = await apiFetch({
+                path: '/wp/v2/mtg4wp/search',
+                method: 'POST',
+                data: {
+                    card_name: searchTerm || '',
+                    set: searchSet || undefined,
+                    number: searchNumber || undefined
+                }
+            });
 
-	const typePriority = ['Token', 'Creature', 'Land', 'Artifact', 'Enchantment', 'Planeswalker', 'Battle', 'Instant', 'Sorcery'];
+            if (response === null) {
+                throw new Error('Card not found');
+            }
 
-	// Prioritize card types
-	const prioritizeType = (types) => {
-		const typeArray = types.split(' ');
-		for (let type of typePriority) {
-			if (typeArray.includes(type)) {
-				return type;
-			}
-		}
-		return typeArray[0] || 'Unknown';
-	};
+            setAttributes({
+                deck: [...deck, response]  // The API now returns the fully formed card object
+            });
 
-	// Function to fetch card details
-	const fetchCardData = async (card, index) => {
-		const cacheKey = `${card.name}-${card.set}-${card.number}`;
-		if (fetchCardDataCache[cacheKey]) {
-			return fetchCardDataCache[cacheKey];
-		}
+            // Reset search fields
+            setSearchTerm('');
+            setSearchSet('');
+            setSearchNumber('');
+        } catch (err) {
+            setError(
+                err.message === 'Card not found' 
+                    ? __('Card not found. Please verify the card name, set code, or collector number.', 'mtg4wp')
+                    : __('Error finding card. Please try again later.', 'mtg4wp')
+            );
+            console.error('MTG4WP Error:', err);
+        } finally {
+            setSearching(false);
+        }
+    };
 
-		let fetchUrl = '';
-		if (card.set && card.number) {
-			fetchUrl = `https://api.scryfall.com/cards/${encodeURIComponent(card.set)}/${encodeURIComponent(card.number)}`;
-		} else {
-			fetchUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(card.name)}&set=${encodeURIComponent(card.set)}`;
-		}
+    const removeCard = (index) => {
+        const newDeck = [...deck];
+        newDeck.splice(index, 1);
+        setAttributes({ deck: newDeck });
+        
+        setImageLoading(prev => {
+            const updated = { ...prev };
+            delete updated[index];
+            const reindexed = {};
+            Object.keys(updated).forEach(key => {
+                const numKey = parseInt(key);
+                if (numKey > index) {
+                    reindexed[numKey - 1] = updated[key];
+                } else {
+                    reindexed[key] = updated[key];
+                }
+            });
+            return reindexed;
+        });
+    };
 
-		try {
-			const response = await fetch(fetchUrl);
-			const data = await response.json();
+    const updateCardProperty = (index, property, value) => {
+        const newDeck = [...deck];
+        newDeck[index] = {
+            ...newDeck[index],
+            [property]: value
+        };
+        setAttributes({ deck: newDeck });
+    };
 
-			if (response.status === 200) {
-				fetchCardDataCache[cacheKey] = data;
-				return data;
-			} else if (response.status === 404) {
-				return { status: 404, message: 'Not Found' };
-			}
-		} catch (error) {
-			// console.error(`Error fetching card data: ${error}`);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+    const flipCard = (index) => {
+        const newDeck = [...deck];
+        const card = newDeck[index];
+        card.currentFace = card.currentFace === 0 ? 1 : 0;
+        setAttributes({ deck: newDeck });
+    };
 
-	// Debounce to delay card data fetching
-	const debounceFetchCardData = (card, index) => {
-		clearTimeout(debounceTimeout.current);
-		debounceTimeout.current = setTimeout(() => {
-			setIsLoading(true);
-			fetchCardData(card, index).then((data) => {
-				if (data) {
-					const newCards = [...cards];
-					let frontImage = null;
-					let backImage = null;
-					let manaCost = '';
-					let type = '';
-					let scryfallName = card.name;
+    const getCurrentFace = (card) => {
+        if (!card.faces || !card.faces.length) return null;
+        return card.faces[card.currentFace] || card.faces[0];
+    };
 
-					if (data.status === 404) {
-						newCards[index] = {
-							...newCards[index],
-							notFound: true,
-						};
-					} else {
-						// Check card layout and set card details
-						if (data.layout === 'modal_dfc' || data.layout === 'transform') {
-							frontImage = data.card_faces?.[0]?.image_uris?.normal || null;
-							backImage = data.card_faces?.[1]?.image_uris?.normal || null;
-							manaCost = data.card_faces?.[0]?.mana_cost;
-							type = data.card_faces?.[0]?.type_line;
-							scryfallName = data.card_faces?.[0]?.name;
-						} else if (data.layout === 'adventure') {
-							frontImage = data.image_uris?.normal || null;
-							manaCost = data.mana_cost;
-							type = data.card_faces?.[0]?.type_line || data.type_line;
-							scryfallName = data.card_faces?.[0]?.name || data.name;
-						} else {
-							frontImage = data.image_uris?.normal || null;
-							manaCost = data.mana_cost;
-							type = data.type_line;
-							scryfallName = data.name;
-						}
+    const sortDeck = async () => {
+        try {
+            const sortedDeck = await apiFetch({
+                path: '/wp/v2/mtg4wp/sort',
+                method: 'POST',
+                data: {
+                    cards: deck.map(card => ({
+                        ...card,
+                        // Ensure all required fields are present
+                        type_line: card.faces?.[0]?.type_line || '',
+                        cmc: card.faces?.[0]?.cmc || 0
+                    })),
+                    sort_by: 'name'
+                }
+            });
+            setAttributes({ deck: sortedDeck });
+        } catch (err) {
+            setError(__('Error sorting deck. Please try again.', 'mtg4wp'));
+        }
+    };
 
-						// Clean and set the card type
-						const prioritizedType = prioritizeType(type);
+    const blockProps = useBlockProps();
 
-						// Update the card information
-						newCards[index] = {
-							...newCards[index],
-							scryfallName,
-							scryfallSet: data.set_name,
-							scryfallCollectorNumber: data.collector_number,
-							cmc: data.cmc,
-							manaCost,
-							type: prioritizedType,
-							frontImage,
-							backImage,
-							scryfall_uri: data.scryfall_uri,
-							notFound: false,
-						};
-					}
+    return (
+        <div {...blockProps}>
+            <InspectorControls>
+                <PanelBody title={__('Deck Settings', 'mtg4wp')} initialOpen={true}>
+                    <PanelRow>
+                        <Button 
+                            variant="secondary"
+                            onClick={sortDeck}
+                            disabled={!deck.length}
+                        >
+                            {__('Sort Deck', 'mtg4wp')}
+                        </Button>
+                    </PanelRow>
+                </PanelBody>
+            </InspectorControls>
 
-					setCards(newCards);
-					setAttributes({ cards: newCards });
-				}
-			});
-		}, 1000);
-	};
+            <div className="mtg4wp-editor">
+                <div className="mtg4wp-search">
+                    <TextControl
+                        label={__('Card Name', 'mtg4wp')}
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        help={__('e.g. Brainstorm, Chromatic Star, Plains', 'mtg4wp')}
+                    />
+                    <TextControl
+                        label={__('Set Code', 'mtg4wp')}
+                        value={searchSet}
+                        onChange={setSearchSet}
+                        help={__('e.g. mmq, brr, pal99', 'mtg4wp')}
+                    />
+                    <TextControl
+                        label={__('Collector Number', 'mtg4wp')}
+                        value={searchNumber}
+                        onChange={setSearchNumber}
+                        help={__('e.g. 61, 11, 7', 'mtg4wp')}
+                    />
+                    <Button 
+                        variant="primary"
+                        onClick={searchCard}
+                        isBusy={searching}
+                        disabled={searching || (!searchTerm && (!searchSet || !searchNumber))}
+                    >
+                        {__('Add Card', 'mtg4wp')}
+                    </Button>
+                    {error && (
+                        <Notice 
+                            status="error" 
+                            isDismissible={false}
+                            className="mtg4wp-error-notice"
+                        >
+                            {error}
+                        </Notice>
+                    )}
+                </div>
 
-	// Update card field values
-	const updateCard = (index, key, value) => {
-		const updatedCards = [...cards];
-		updatedCards[index][key] = value;
-		setCards(updatedCards);
-		setAttributes({ cards: updatedCards });
+                <div className="mtg4wp-deck-list">
+                    {deck.length === 0 && (
+                        <Notice 
+                            status="info" 
+                            isDismissible={false}
+                            className="mtg4wp-empty-notice"
+                        >
+                            {__('Your deck is empty. Try adding some cards using the search form above.', 'mtg4wp')}
+                        </Notice>
+                    )}
+                    {deck.map((card, index) => {
+                        const currentFace = getCurrentFace(card);
+                        if (!currentFace) return null;
+                        
+                        return (
+                            <Card key={index} className="mtg4wp-card">
+                                <CardBody>
+                                    <div className="mtg4wp-card-layout">
+                                        <div className="mtg4wp-card-image">
+                                            {currentFace.image && (
+                                                <>
+                                                    <img 
+                                                        src={currentFace.image}
+                                                        alt={currentFace.name}
+                                                        width="146" 
+                                                        height="204"
+                                                        className={`mtg4wp-card-img ${card.foil ? 'foil' : ''}`}
+                                                        onLoad={() => setImageLoading(prev => ({...prev, [index]: false}))}
+                                                        style={{ display: imageLoading[index] ? 'none' : 'block' }}
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            setError(__('Error loading card image. Please try again.', 'mtg4wp'));
+                                                        }}
+                                                    />
+                                                    {imageLoading[index] && (
+                                                        <div className="mtg4wp-card-loading">
+                                                            <Spinner />
+                                                        </div>
+                                                    )}
+                                                    {card.isDoubleFaced && (
+                                                        <Button
+                                                            variant="secondary"
+                                                            className="mtg4wp-card-flip"
+                                                            onClick={() => flipCard(index)}
+                                                        >
+                                                            {__('Flip', 'mtg4wp')}
+                                                        </Button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                        <div className="mtg4wp-card-content">
+                                            <div className="mtg4wp-card-header">
+                                                <h4>{card.name}</h4>
+                                                <Button
+                                                    variant="secondary"
+                                                    isDestructive
+                                                    onClick={() => removeCard(index)}
+                                                >
+                                                    {__('Remove', 'mtg4wp')}
+                                                </Button>
+                                            </div>
+                                            <div className="mtg4wp-card-controls">
+                                                <NumberControl
+                                                    label={__('Quantity', 'mtg4wp')}
+                                                    value={card.quantity}
+                                                    onChange={(value) => updateCardProperty(index, 'quantity', parseInt(value) || 1)}
+                                                    min={1}
+                                                />
+                                                <SelectControl
+                                                    label={__('Section', 'mtg4wp')}
+                                                    value={card.section}
+                                                    options={[
+                                                        { label: 'Commander', value: 'commander' },
+                                                        { label: 'Mainboard', value: 'mainboard' },
+                                                        { label: 'Sideboard', value: 'sideboard' },
+                                                        { label: 'Maybeboard', value: 'maybeboard' },
+                                                        { label: 'Token', value: 'token' }
+                                                    ]}
+                                                    onChange={(value) => updateCardProperty(index, 'section', value)}
+                                                />
+                                                <ToggleControl
+                                                    label={__('Foil', 'mtg4wp')}
+                                                    checked={card.foil}
+                                                    onChange={(value) => updateCardProperty(index, 'foil', value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+};
 
-		// Fetch updated card data when necessary fields change
-		if (key === 'name' || key === 'set' || key === 'number') {
-			debounceFetchCardData(updatedCards[index], index);
-		}
-	};
-
-	// Add new card template
-	const addCard = () => {
-		const newCard = { name: '', set: '', number: '', quantity: 1, commander: false, foil: false, sideboard: false };
-		setCards([...cards, newCard]);
-		setAttributes({ cards: [...cards, newCard] });
-	};
-
-	// Remove existing card
-	const removeCard = (index) => {
-		const updatedCards = cards.filter((_, i) => i !== index);
-		setCards(updatedCards);
-		setAttributes({ cards: updatedCards });
-	};
-
-	return (
-		<div {...blockProps}>
-			{isLoading}
-			{cards.map((card, index) => (
-				<div key={index} className="mtg-card">
-					<div className="card-inputs">
-						<TextControl
-							label={__('Name', 'mtg-tools')}
-							value={card.name}
-							onChange={(value) => updateCard(index, 'name', value)}
-						/>
-						<TextControl
-							label={__('Set', 'mtg-tools')}
-							value={card.set}
-							onChange={(value) => updateCard(index, 'set', value)}
-						/>
-						<TextControl
-							label={__('Number', 'mtg-tools')}
-							value={card.number}
-							onChange={(value) => updateCard(index, 'number', value)}
-						/>
-						<TextControl
-							label={__('Quantity', 'mtg-tools')}
-							type="number"
-							value={card.quantity}
-							onChange={(value) => updateCard(index, 'quantity', parseInt(value))}
-						/>
-						<CheckboxControl
-							label={__('Commander', 'mtg-tools')}
-							checked={card.commander}
-							onChange={(value) => updateCard(index, 'commander', value)}
-						/>
-						<CheckboxControl
-							label={__('Foil', 'mtg-tools')}
-							checked={card.foil}
-							onChange={(value) => updateCard(index, 'foil', value)}
-						/>
-						<CheckboxControl
-							label={__('Sideboard', 'mtg-tools')}
-							checked={card.Sideboard}
-							onChange={(value) => updateCard(index, 'sideboard', value)}
-						/>
-					</div>
-					<div className="card-preview">
-						{card.notFound ? (
-							<div className="not-found">{__('Not Found', 'mtg-tools')}</div>
-						) : card.frontImage ? (
-							<img src={card.frontImage} alt={card.name} />
-						) : (
-							<div className="placeholder"></div>
-						)}
-					</div>
-					<Button isDestructive onClick={() => removeCard(index)}>{__('Remove Card', 'mtg-tools')}</Button>
-				</div>
-			))}
-			<Button isPrimary onClick={addCard}>{__('Add Card', 'mtg-tools')}</Button>
-		</div>
-	);
-}
+export default Edit;

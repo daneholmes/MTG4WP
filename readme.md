@@ -1,21 +1,49 @@
-# Magic Decks and Cards
+# MTG4WP
 Contributors:      Dane Holmes
 Tags:              block
-Tested up to:      6.5.3
-Stable tag:        1.0.0
+Requires at least: 6.7
+Tested up to:      6.7.1
+Stable tag:        2.0.0
+Requires PHP:      
 License:           GPL-3.0-only
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
-A plugin for displaying Magic: The Gathering© decks and card tooltips on WordPress using Gutenberg Blocks and shortcodes.
+A plugin for displaying Magic: The Gathering© on Wordpress.
 
 ## Description
 
-Magic Decks and Cards adds a block to the Gutenberg Editor called "Deck." The Deck block allows you to create and display Magic: The Gathering© decks by adding card names and/or set and collector numbers. After adding your desired cards, the plugin does all the work, organizing the cards by type and displaying your deck on your website compactly and comprehensively. Additionally, it adds a shortcode which adds a tooltip with the card when the user hovers or clicks on the card.
+*MTG4WP* adds a block to the Gutenberg Editor called "Deck." The Deck block allows you to create and display Magic decks by adding card names and/or set and collector numbers. After adding your desired cards, the plugin does all the work, organizing the cards and displaying your deck on your website compactly and comprehensively. Additionally, it adds a shortcode which adds a tooltip with a picture of the card when the user hovers or clicks on the card.
 
 ## Installation
 
 1. Upload the plugin files to the `/wp-content/plugins/mtg-tools` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
+
+## File Structure and High-Level Descriptions
+
+MTG4WP/
+├── MTG4WP.php                  # Registers block & enqueues assets
+├── readme.md                   # Plugin documentation
+│
+├── src/
+│   ├── block.json              # Deck block configuration
+│   ├── index.js                # Block registration
+│   ├── edit.js                 # Block design and state management
+│   ├── save.js                 # Renders block
+│   ├── editor.scss             # Backend styles
+│   ├── style.scss              # Frontend styles
+│   │
+│   ├── components/
+│   │   ├── deck-editor.js      # Individual card input/editing
+│   │   ├── card-list.js        # Displays list of cards in editor
+│   │   └── card-preview.js     # Card preview component
+│   │
+│   └── api/
+│       ├── fetch-card.php      # Scryfall API
+│       ├── return-card.php     # Card caching
+│       └── sort-card.php       # Card tagging and sorting within deck
+│
+└── package.json                # NPM dependencies and build scripts
 
 ## Frequently Asked Questions
 
@@ -55,13 +83,16 @@ I believe all of them.
 
 ## Screenshots
 
-![Alt](assets/screenshot-1.png "Example commander deck on desktop")
+![Alt](assets/screenshot.png "Example commander deck on desktop")
 
 ## Notices
 
 Magic Decks and Cards is unofficial Fan Content permitted under the [Fan Content Policy](https://company.wizards.com/en/legal/fancontentpolicy). Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.
 
 ## Changelog
+
+**2.0.0**
+* Redesigned app.
 
 **1.0.0**
 * Initial release.
