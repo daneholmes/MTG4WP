@@ -95,7 +95,7 @@ const DeckImporter = ({ onImport, onClose }) => {
             <div className="mtg4wp-importer">
                 <TextareaControl
                     label={__('Paste your deck list', 'mtg4wp')}
-                    help={__('Format: "1 Card Name (SET) 123 *F* [Section]"', 'mtg4wp')}
+                    help={__('Format: 1 Card Name (SET) 123 *F* [Section]', 'mtg4wp')}
                     value={importText}
                     onChange={setImportText}
                     rows={10}

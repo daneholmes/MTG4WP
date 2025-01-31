@@ -1,8 +1,12 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
-import { useState } from '@wordpress/element';
+import {
+    useState,
+    createInterpolateElement
+} from '@wordpress/element';
 import {
     TextControl,
+    ExternalLink,
     Button,
     SelectControl,
     PanelBody,
@@ -12,8 +16,10 @@ import {
     CardBody,
     Spinner,
     __experimentalNumberControl as NumberControl,
-    Notice
+    Notice,
+    __experimentalHeading as Heading
 } from '@wordpress/components';
+import { flipHorizontal } from '@wordpress/icons';
 import { InspectorControls } from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
 import DeckImporter from './components/importer';
@@ -158,23 +164,35 @@ const Edit = ({ attributes, setAttributes }) => {
 
             <div className="mtg4wp-editor">
                 <div className="mtg4wp-search">
+                <Heading level="2">Add Cards</Heading>
                     <TextControl
                         label={__('Card Name', 'mtg4wp')}
                         value={searchTerm}
                         onChange={setSearchTerm}
                         help={__('e.g. Brainstorm, Chromatic Star, Plains', 'mtg4wp')}
+                        __nextHasNoMarginBottom={false}
                     />
                     <TextControl
                         label={__('Set Code', 'mtg4wp')}
                         value={searchSet}
                         onChange={setSearchSet}
-                        help={__('e.g. mmq, brr, pal99', 'mtg4wp')}
+                        help={createInterpolateElement(
+                            __('See the list of valid <a>set codes</a>', 'mtg4wp'),
+                            {
+                                a: (
+                                    <ExternalLink href="https://scryfall.com/sets?lang=en">
+                                    </ExternalLink>
+                                )
+                            }
+                        )}
+                        __nextHasNoMarginBottom={false}
                     />
                     <TextControl
                         label={__('Collector Number', 'mtg4wp')}
                         value={searchNumber}
                         onChange={setSearchNumber}
-                        help={__('e.g. 61, 11, 7', 'mtg4wp')}
+                        help={__('e.g. 61, 11, 417', 'mtg4wp')}
+                        __nextHasNoMarginBottom={false}
                     />
                     <div className="mtg4wp-search-buttons">
                         <Button 
@@ -247,11 +265,12 @@ const Edit = ({ attributes, setAttributes }) => {
                                                     )}
                                                     {card.isDoubleFaced && (
                                                         <Button
-                                                            variant="secondary"
+                                                            variant="primary"
                                                             className="mtg4wp-card-flip"
                                                             onClick={() => flipCard(index)}
                                                         >
-                                                            {__('Flip', 'mtg4wp')}
+                                                            <span className="mtg4wp-flip-icon">{flipHorizontal}</span>
+                                                            <span>{__('Flip', 'mtg4wp')}</span>
                                                         </Button>
                                                     )}
                                                 </>
@@ -259,7 +278,7 @@ const Edit = ({ attributes, setAttributes }) => {
                                         </div>
                                         <div className="mtg4wp-card-content">
                                             <div className="mtg4wp-card-header">
-                                                <h4>{card.name}</h4>
+                                                <Heading level="4">{card.name}</Heading>
                                                 <Button
                                                     variant="secondary"
                                                     isDestructive
@@ -286,11 +305,13 @@ const Edit = ({ attributes, setAttributes }) => {
                                                         { label: 'Token', value: 'token' }
                                                     ]}
                                                     onChange={(value) => updateCardProperty(index, 'section', value)}
+                                                    __nextHasNoMarginBottom={false}
                                                 />
                                                 <ToggleControl
                                                     label={__('Foil', 'mtg4wp')}
                                                     checked={card.foil}
                                                     onChange={(value) => updateCardProperty(index, 'foil', value)}
+                                                    __nextHasNoMarginBottom={false}
                                                 />
                                             </div>
                                         </div>
