@@ -1,7 +1,7 @@
 # MTG4WP - Magic: The Gathering WordPress Plugin
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.7%2B-blue.svg)](https://wordpress.org/download/)
-[![PHP](https://img.shields.io/badge/PHP-7.0%2B-purple.svg)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.4%2B-purple.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-GPL--3.0-green.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 ## Overview
@@ -25,7 +25,7 @@ MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gather
 2. Upload the plugin files to `/wp-content/plugins/MTG4WP`
 3. Activate the plugin through the 'Plugins' screen in WordPress
 
-### Method 3: Development/Compilation
+### Method 3: Compilation
 ```zsh
 # Clone the repository
 git clone https://github.com/daneholmes/MTG4WP.git
@@ -36,8 +36,8 @@ cd MTG4WP
 # Install dependencies
 npm install
 
-# Build the plugin
-npm run build
+# Build the plugin using provided script
+./assets\/build\/build.sh
 ```
 
 ## Usage
@@ -58,10 +58,6 @@ Magic Decks and Cards is unofficial Fan Content permitted under the [Fan Content
 **Disclaimer:** Not approved/endorsed by Wizards of the Coast. Portions of the materials used are property of Wizards of the Coast LLC. ©Wizards of the Coast LLC.
 
 ## Changelog
-
-### 1.0.1
-- Bug fixes
-- Animated buttons.
 
 ### 1.0.0
 - Initial release.
