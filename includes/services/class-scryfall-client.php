@@ -5,7 +5,7 @@ namespace MTG4WP\Services;
 class ScryfallClient
 {
     private const API_BASE_URL = 'https://api.scryfall.com';
-    private const USER_AGENT = 'MTG4WP/2.0.0';
+    private const USER_AGENT = 'MTG4WP/1.0.0';
     private const RATE_LIMIT = [
         'requests_per_second' => 10,
         'burst_limit' => 100,
