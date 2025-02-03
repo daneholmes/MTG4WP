@@ -1,104 +1,68 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
-import {
-    Button,
-    TextareaControl,
-    Modal,
-    Notice
-} from '@wordpress/components';
+import { Button, TextareaControl, Modal, Notice, __experimentalHeading as Heading } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 
-const DeckImporter = ({ onImport, onClose }) => {
-    const [importText, setImportText] = useState('');
-    const [importing, setImporting] = useState(false);
-    const [error, setError] = useState('');
+const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => {
+    const { importText = '', importing = false, error = '' } = attributes;
 
-    const parseCardLine = (line) => {
-        const regex = /^(\d+)\s+([^(]+?)\s+\(([^)]+)\)\s+([\w\-★]+)(?:\s+\*F\*)?(?:\s+\[([^\]]+)\])?$/;
-        const match = line.trim().match(regex);
-
-        if (!match) {
-            throw new Error(`Invalid line format: ${line}`);
-        }
-
-        const [, quantity, name, set, number] = match;
-        
-        const cleanNumber = number.replace(/★/g, '');
-        
-        return {
-            quantity: parseInt(quantity, 10),
-            name: name.trim(),
-            set: set.toLowerCase(),
-            number: cleanNumber,
-            foil: line.includes('*F*'),
-            section: (match[5] || 'mainboard').toLowerCase()
-        };
-    };
-
-    const importDeck = async () => {
-        setImporting(true);
-        setError('');
-
+    const handleImport = async () => {
         try {
-            const lines = importText
-                .split('\n')
-                .filter(line => line.trim());
+            setAttributes({ importing: true, error: '' });
 
-            const cardPromises = lines.map(async (line, index) => {
-                try {
-                    const parsedCard = parseCardLine(line);
-                    
-                    const response = await apiFetch({
-                        path: '/wp/v2/mtg4wp/search',
-                        method: 'POST',
-                        data: {
-                            card_name: parsedCard.name,
-                            set: parsedCard.set,
-                            number: parsedCard.number
-                        }
-                    });
-
-                    if (!response || !response.faces || !response.faces.length) {
-                        throw new Error(`Card not found: ${parsedCard.name}`);
-                    }
-
-                    return {
-                        ...response,
-                        quantity: parsedCard.quantity,
-                        foil: parsedCard.foil,
-                        section: parsedCard.section
-                    };
-
-                } catch (err) {
-                    console.error(`Error importing line ${index + 1}:`, err);
-                    throw new Error(`Line ${index + 1}: ${err.message}`);
-                }
+            const response = await apiFetch({
+                path: '/mtg4wp/v1/deck/import',
+                method: 'POST',
+                data: { deck_list: importText }
             });
 
-            const importedCards = await Promise.all(cardPromises);
-            onImport(importedCards);
-            onClose();
+            if (response.errors.length > 0) {
+                setAttributes({
+                    error: (
+                        <div className="mtg4wp-import-errors">
+                            <p>{__('Some cards could not be imported:', 'mtg4wp')}</p>
+                            <ul>
+                                {response.errors.map((error, index) => (
+                                    <li key={index}>
+                                        {__('Line', 'mtg4wp')} {error.line}: {error.message}
+                                        <code>{error.content}</code>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )
+                });
+            }
 
+            if (response.cards.length > 0) {
+                onImport(response.cards);
+            }
         } catch (err) {
-            setError(err.message);
+            setAttributes({ error: err.message });
         } finally {
-            setImporting(false);
+            setAttributes({ importing: false });
         }
     };
+
+    const placeholderText = `4 Lightning Bolt (sld) 901 *F* [mainboard]
+2 Spell Pierce
+3 Steam Vents (grn)
+1 Blood Moon [sideboard]
+`;
 
     return (
         <Modal
-            title={__('Import Deck', 'mtg4wp')}
+            title={<Heading level={2}>{__('Import Deck', 'mtg4wp')}</Heading>}
             onRequestClose={onClose}
             className="mtg4wp-importer-modal"
         >
             <div className="mtg4wp-importer">
                 <TextareaControl
                     label={__('Paste your deck list', 'mtg4wp')}
-                    help={__('Format: 1 Card Name (SET) 123 *F* [Section]', 'mtg4wp')}
+                    help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'mtg4wp')}
                     value={importText}
-                    onChange={setImportText}
-                    rows={10}
+                    onChange={(newText) => setAttributes({ importText: newText })}
+                    placeholder={placeholderText}
+                    rows={12}
                 />
 
                 {error && (
@@ -120,7 +84,7 @@ const DeckImporter = ({ onImport, onClose }) => {
                     </Button>
                     <Button
                         variant="primary"
-                        onClick={importDeck}
+                        onClick={handleImport}
                         isBusy={importing}
                         disabled={importing || !importText.trim()}
                     >

@@ -14,6 +14,12 @@ A plugin for displaying Magic: The Gathering© on Wordpress.
 
 *MTG4WP* adds a block to the Gutenberg Editor called "Deck." The Deck block allows you to create and display Magic decks by adding card names and/or set and collector numbers. After adding your desired cards, the plugin does all the work, organizing the cards and displaying your deck on your website compactly and comprehensively. Additionally, it adds a shortcode which adds a tooltip with a picture of the card when the user hovers or clicks on the card.
 
+# Compile
+$ cd /MTG4WP
+$ npm install
+$ npm run build
+$ 
+
 ## Installation
 
 1. Upload the plugin files to the `/wp-content/plugins/mtg-tools` directory, or install the plugin through the WordPress plugins screen directly.

@@ -6,13 +6,30 @@
     "title": "Deck",
     "category": "widgets",
     "icon": "list-view",
-    "description": "Add a Magic deck.",
+    "description": "Display Magic: The Gathering decks and card tooltips.",
+    "keywords": ["mtg", "magic", "cards", "deck"],
     "supports": {
         "html": false,
         "anchor": true,
         "align": true,
-        "multiple": true
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": true
+        },
+        "color": {
+            "text": true,
+            "background": true
+        }
     },
+    "textdomain": "MTG4WP",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScript": "file:./view.js",
     "attributes": {
         "deck": {
             "type": "array",
@@ -20,23 +37,105 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": { "type": "string" },
-                    "set": { "type": "string" },
-                    "number": { "type": "string" },
-                    "quantity": { "type": "number" },
-                    "foil": { "type": "boolean" },
-                    "section": { 
-                       "type": "string",
-                       "enum": ["commander", "mainboard", "sideboard", "maybeboard", "token"]
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "set": {
+                        "type": "string"
+                    },
+                    "collector_number": {
+                        "type": "string"
+                    },
+                    "type_line": {
+                        "type": "string"
+                    },
+                    "primary_type": {
+                        "type": "string"
+                    },
+                    "cmc": {
+                        "type": "number"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "default": 1
+                    },
+                    "foil": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "section": {
+                        "type": "string",
+                        "enum": ["commander", "mainboard", "sideboard", "maybeboard", "token"],
+                        "default": "mainboard"
+                    },
+                    "faces": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "type_line": { "type": "string" },
+                                "oracle_text": { "type": "string" },
+                                "image": { "type": "string" },
+                                "mana_cost": { "type": "string" }
+                            }
+                        }
+                    },
+                    "currentFace": {
+                        "type": "number",
+                        "default": 0
                     }
                 },
-                "required": ["name", "quantity", "foil", "section"]
+                "required": ["id", "name", "set", "collector_number"]
             }
+        },
+        "importText": {
+            "type": "string",
+            "default": ""
+        },
+        "importing": {
+            "type": "boolean",
+            "default": false
+        },
+        "showImporter": {
+            "type": "boolean",
+            "default": false
+        },
+        "layout": {
+            "type": "string",
+            "enum": ["list", "grid"],
+            "default": "list"
+        },
+        "searching": {
+            "type": "boolean",
+            "default": false
+        },
+        "error": {
+            "type": "string",
+            "default": ""
         }
     },
-    "textdomain": "MTG4WP",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "viewScript": "file:./view.js"
+    "example": {
+        "attributes": {
+            "deck": [
+                {
+                    "id": "9457b5d3-5e48-4ce1-8c88-1d1600688b1f",
+                    "name": "Stroke of Genius",
+                    "set": "usg",
+                    "collector_number": "100",
+                    "quantity": 1,
+                    "section": "mainboard",
+                    "faces": [{
+                        "name": "Stroke of Genius",
+                        "type_line": "Instant",
+                        "oracle_text": "Target player draws X cards.",
+                        "mana_cost": "{X}{2}{U}"
+                    }]
+                }
+            ]
+        }
+    }
 }

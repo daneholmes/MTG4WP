@@ -1,195 +1,286 @@
-.mtg4wp-editor {
-    .mtg4wp-search {
-        margin-bottom: 2em;
-        padding: 1em;
-        background: #f0f0f1;
-        border-radius: 2px;
+// editor.scss
+@import "@wordpress/base-styles/colors";
+@import "@wordpress/base-styles/variables";
+@import "@wordpress/base-styles/mixins";
+@import "@wordpress/base-styles/breakpoints";
 
-        .mtg4wp-search-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 1em;
-        }
+// Variables
+$mtg4wp-card-padding: $grid-unit-20;
+$mtg4wp-border-radius: $radius-block-ui;
+$mtg4wp-transition: 0.2s ease;
+
+// Mixins
+@mixin mtg4wp-input {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 $grid-unit-15;
+    border: 1px solid $gray-300;
+    border-radius: $mtg4wp-border-radius;
+    background-color: $white;
+    font-size: 13px;
+    
+    &:focus {
+        border-color: var(--wp-admin-theme-color);
+        box-shadow: 0 0 0 1px var(--wp-admin-theme-color);
+        outline: none;
     }
 
-    .mtg4wp-card {
-        margin-bottom: 1em;
-
-        .mtg4wp-card-layout {
-            display: flex;
-            gap: 1em;
-            align-items: flex-start;
-        }
-
-        .mtg4wp-card-image {
-            flex-shrink: 0;
-            width: 146px;
-            position: relative;
-            
-            .mtg4wp-card-container {
-                position: relative;
-                width: 146px;
-                height: 204px;
-            }
-
-            .mtg4wp-card-img {
-                width: 100%;
-                height: auto;
-                border-radius: 4.75% / 3.5%;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                transition: transform 0.3s ease;
-            }
-
-            .foil-overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                border-radius: 4.75% / 3.5%;
-                background: linear-gradient(
-                    125deg,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(255, 255, 255, 0.2) 10%,
-                    rgba(255, 255, 255, 0.4) 20%,
-                    rgba(255, 255, 255, 0.6) 30%,
-                    rgba(255, 255, 255, 0.4) 40%,
-                    rgba(255, 255, 255, 0.2) 50%,
-                    rgba(255, 255, 255, 0) 60%
-                );
-                background-size: 400% 400%;
-                mix-blend-mode: overlay;
-                pointer-events: none;
-                animation: foilShimmer 3s ease infinite;
-                z-index: 1;
-            }
-
-            .mtg4wp-card-loading {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: #f0f0f1;
-                border-radius: 4.75% / 3.5%;
-            }
-
-            .mtg4wp-card-flip {
-                position: absolute;
-                bottom: 12px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 2;
-                min-height: 36px;
-                padding: 6px 12px;
-                border-radius: 4px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                backdrop-filter: blur(4px);
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                
-                &:hover {
-                    transform: translateX(-50%) translateY(-1px);
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-                }
-                
-                transition: all 0.2s ease;
-                
-                .mtg4wp-flip-icon {
-                    width: 14px;
-                    height: 14px;
-                    display: inline-flex;
-                    align-items: center;
-                
-                    svg {
-                        width: 100%;
-                        height: 100%;
-                    }
-                }
-            
-                span {
-                    line-height: 1;
-                }
-            }
-        }
-
-        .mtg4wp-card-content {
-            flex-grow: 1;
-            min-width: 0;
-        }
-
-        .mtg4wp-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1em;
-
-            h4 {
-                margin: 0;
-                font-size: 1.1em;
-            }
-        }
-
-        .mtg4wp-card-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1em;
-
-            .components-base-control {
-                margin-bottom: 0;
-            }
-        }
-    }
-
-    .mtg4wp-error-notice {
-        margin-top: 1em;
-    }
-
-    .mtg4wp-empty-notice {
-        margin: 2em 0;
+    &:disabled {
+        background-color: $gray-100;
+        color: $gray-700;
     }
 }
 
-.mtg4wp-importer {
-    min-width: 500px;
-    
-    .components-textarea-control__input {
-        font-family: monospace;
-        font-size: 14px;
+// Card Search Component
+.mtg4wp-card-search {
+    background: $white;
+    padding: $mtg4wp-card-padding;
+    border: 1px solid $gray-200;
+    border-radius: $mtg4wp-border-radius;
+    margin-bottom: $grid-unit-20;
+
+    .mtg4wp-section-header {
+        margin-bottom: $grid-unit-20;
+        
+        .mtg4wp-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 
-    .mtg4wp-import-errors {
-        margin: 1em 0;
+    .components-text-control__input {
+        @include mtg4wp-input;
+    }
 
-        ul {
-            margin: 0.5em 0 0;
-            padding-left: 1em;
+    .components-button {
+        height: 36px;
+        justify-content: center;
+        min-width: 100px;
+    }
+}
+
+// Card List Component
+.mtg4wp-deck-list {
+    .mtg4wp-card {
+        background: $white;
+        border: 1px solid $gray-200;
+        border-radius: $mtg4wp-border-radius;
+        margin-bottom: $grid-unit-15;
+        padding: $mtg4wp-card-padding;
+    }
+
+    .mtg4wp-card-layout {
+        display: grid;
+        grid-template-columns: minmax(80px, 25%) 1fr;
+        gap: $grid-unit-20;
+        align-items: start;
+
+        @media (max-width: $break-small) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // Image Section
+    .mtg4wp-card-image-wrapper {
+        .mtg4wp-card-image-container {
+            position: relative;
+            aspect-ratio: 63/88;
+            border-radius: $mtg4wp-border-radius;
+            overflow: hidden;
+            background-color: $gray-100;
         }
 
-        li {
-            margin-bottom: 0.5em;
+        .mtg4wp-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: $mtg4wp-border-radius
+        }
 
-            code {
-                display: block;
-                margin-top: 0.25em;
-                padding: 0.25em 0.5em;
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 2px;
-                font-size: 12px;
+        .mtg4wp-card-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba($white, 0.9);
+            border-radius: $mtg4wp-border-radius;
+        }
+    }
+
+    // Details Section
+    .mtg4wp-card-details {
+        display: flex;
+        flex-direction: column;
+        gap: $grid-unit-15;
+    }
+
+    .mtg4wp-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: $grid-unit-15;
+
+        .mtg4wp-card-title {
+            font-size: 18px;
+            line-height: 1.4;
+            font-weight: 600;
+            color: $gray-900;
+            margin: 0;
+        }
+    }
+
+    .mtg4wp-card-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: $grid-unit-20;
+    }
+
+    .mtg4wp-control {
+        display: flex;
+        flex-direction: column;
+        gap: $grid-unit-05;
+
+        .mtg4wp-control-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: $gray-700;
+        }
+
+        .mtg4wp-control-input,
+        .mtg4wp-control-select {
+            @include mtg4wp-input;
+        }
+
+        .mtg4wp-control-select {
+            padding-right: 36px;
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z' fill='%23757575'/%3E%3C/svg%3E");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px 16px;
+            appearance: none;
+        }
+    }
+
+    .mtg4wp-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $grid-unit-15;
+
+        .components-button {
+            height: 36px;
+            min-width: auto;
+            padding: 0 $grid-unit-15;
+
+            svg {
+                width: 18px;
+                height: 18px;
             }
+        }
+
+        .mtg4wp-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: $grid-unit-10;
+            font-size: 13px;
+            color: $gray-900;
+            cursor: pointer;
+
+            input[type="checkbox"] {
+                margin: 0;
+                height: 18px;
+                width: 18px;
+            }
+        }
+    }
+}
+
+// Importer Modal
+.mtg4wp-importer-modal {
+    max-width: 800px !important;
+    width: 90vw !important;
+
+    .components-modal__content {
+        padding: 0 !important;
+        margin-top: 56px;
+    }
+
+    .components-modal__header {
+        padding: $mtg4wp-card-padding;
+        padding-bottom: 0;
+        height: 56px;
+        
+        .components-modal__header-heading {
+            font-size: 16px;
+        }
+    }
+
+    .mtg4wp-importer {
+        padding: $mtg4wp-card-padding;
+        padding-top: 0;
+    }
+
+    .mtg4wp-importer {
+        display: flex;
+        flex-direction: column;
+        gap: $grid-unit-20;
+
+        .components-textarea-control__input {
+            @include mtg4wp-input;
+            height: auto;
+            min-height: 300px;
+            padding: $grid-unit-15;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre;
         }
     }
 
     .mtg4wp-importer-actions {
         display: flex;
         justify-content: flex-end;
-        gap: 8px;
-        margin-top: 1em;
+        gap: $grid-unit-15;
+        margin-top: $grid-unit-15;
+
+        .components-button {
+            height: 36px;
+            min-width: 100px;
+            justify-content: center;
+        }
     }
+}
+
+// Notices
+.mtg4wp-notice {
+    margin: $grid-unit-20 0;
+}
+
+// Foil Effect
+.foil-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 4.75% / 3.5%;
+    background: linear-gradient(
+        125deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 10%,
+        rgba(255, 255, 255, 0.4) 20%,
+        rgba(255, 255, 255, 0.6) 30%,
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 60%
+    );
+    background-size: 400% 400%;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    animation: foilShimmer 3s ease infinite;
+    z-index: 1;
 }
 
 @keyframes foilShimmer {
