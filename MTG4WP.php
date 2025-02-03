@@ -4,7 +4,7 @@
  * Plugin Name: MTG4WP
  * Plugin URI: https://github.com/daneholmes/MTG4WP
  * Description: Display Magic: The Gathering© cards on WordPress
- * Version: 2.0.0
+ * Version: 1.0.0
  * Author: Dane Holmes
  * Author URI: https://daneholmes.com
  * License: GPL-3.0-only
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Constants
-define('MTG4WP_VERSION', '2.0.0');
+define('MTG4WP_VERSION', '1.0.0');
 define('MTG4WP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MTG4WP_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -97,7 +97,7 @@ register_deactivation_hook(__FILE__, __NAMESPACE__ . '\deactivate');
 // Plugin upgrade hook
 function handle_upgrade()
 {
-    $current_version = get_option('mtg4wp_version', '2.0.0');
+    $current_version = get_option('mtg4wp_version', '1.0.0');
 
     if (version_compare($current_version, MTG4WP_VERSION, '<')) {
         Services\CacheService::flush_all_caches();
