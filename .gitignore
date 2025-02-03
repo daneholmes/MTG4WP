@@ -1,6 +1,6 @@
-/node_modules
-/build
-/.git
-/.nova
 .DS_Store
+/.git
+/node_modules
 package-lock.json
+/build
+/.nova
