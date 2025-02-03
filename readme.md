@@ -72,4 +72,5 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Contact
 
-For support, please [open an issue](https://github.com/daneholmes/MTG4WP/issues) on the GitHub repository. Or connect with me on [daneholmes.com](http://daneholmes.com/contact/).
+For support, please [open an issue](https://github.com/daneholmes/MTG4WP/issues) on the GitHub repository.
+
