@@ -1,52 +1,79 @@
-# MTG4WP
-Contributors:      Dane Holmes
-Tags:              block
-Requires at least: 6.7
-Tested up to:      6.7.1
-Stable tag:        2.0.0
-Requires PHP:      8.4.1
-License:           GPL-3.0-only
-License URI:       https://www.gnu.org/licenses/gpl-3.0.html
+# MTG4WP - Magic: The Gathering WordPress Plugin
 
-A plugin for displaying Magic: The Gathering© on Wordpress.
+[![WordPress](https://img.shields.io/badge/WordPress-6.7%2B-blue.svg)](https://wordpress.org/download/)
+[![PHP](https://img.shields.io/badge/PHP-7.0%2B-purple.svg)](https://www.php.net/)
+[![License](https://img.shields.io/badge/License-GPL--3.0-green.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-## Description
+## Overview
 
-*MTG4WP* adds a block to the Gutenberg Editor called "Deck." The Deck block allows you to create and display Magic decks by adding card names and/or set and collector numbers. After adding your desired cards, the plugin does all the work, organizing the cards and displaying your deck on your website compactly and comprehensively. Additionally, it adds a shortcode which adds a tooltip with a picture of the card when the user hovers or clicks on the card.
+MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can showcase your decks and card collections with ease.
 
-# Compile
-$ cd /MTG4WP
-$ npm install
-$ npm run build
-$ 
+## Prerequisites
+
+- WordPress 6.7 or higher
+- PHP 7.0 or higher
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/mtg-tools` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress
+### Method 1: WordPress Plugin Directory
+1. Navigate to Plugins > Add New in your WordPress dashboard
+2. Search for "MTG4WP"
+3. Click "Install Now" and then "Activate"
 
-## Frequently Asked Questions
+### Method 2: Manual Upload
+1. Download the latest release
+2. Upload the plugin files to `/wp-content/plugins/MTG4WP`
+3. Activate the plugin through the 'Plugins' screen in WordPress
 
-**How do I add a deck?**
+### Method 3: Development/Compilation
+```zsh
+# Clone the repository
+git clone https://github.com/daneholmes/MTG4WP.git
 
-Open a new page or post. Choose a new block from the editor. Then finally, search for "Deck" and add it to your post.
+# Navigate to the project directory
+cd MTG4WP
 
-**How can I find collector number and set code?**.
+# Install dependencies
+npm install
 
-The set code and the collector numbers are found in the bottom left corner of modern Magic cards. Alternatively, you can look them up using a tool like [Scryfall](https://scryfall.com).
+# Build the plugin
+npm run build
+```
 
-**What formats can this plugin display?**
+## Usage
 
-I believe all of them.
+### Adding a Deck
+1. Open a new page or post in the WordPress editor
+2. Click "Add Block"
+3. Search for "Deck"
+4. Add the block to your post
 
-## Notices
+### Finding Collector Numbers and Set Codes
+Look in the bottom left corner of modern Magic cards. Or, you can use online resources like [Scryfall](https://scryfall.com) for precise information
 
-Magic Decks and Cards is unofficial Fan Content permitted under the [Fan Content Policy](https://company.wizards.com/en/legal/fancontentpolicy). Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.
+## Legal Notice
+
+Magic Decks and Cards is unofficial Fan Content permitted under the [Fan Content Policy](https://company.wizards.com/en/legal/fancontentpolicy). 
+
+**Disclaimer:** Not approved/endorsed by Wizards of the Coast. Portions of the materials used are property of Wizards of the Coast LLC. ©Wizards of the Coast LLC.
 
 ## Changelog
 
-**2.0.0**
-* Completely rebuilt app.
+### 1.0.1
+- Bug fixes
+- Animated buttons.
 
-**1.0.0**
-* Initial release.
+### 1.0.0
+- Initial release.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://www.gnu.org/licenses/gpl-3.0.html) for details.
+
+## Contact
+
+For support, please [open an issue](https://github.com/daneholmes/MTG4WP/issues) on the GitHub repository. Or connect with me on [daneholmes.com](http://daneholmes.com/contact/).
