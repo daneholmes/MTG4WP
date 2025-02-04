@@ -21,27 +21,29 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
     if (!deck.length) {
         return (
             <Notice status="info" isDismissible={false} className="mtg4wp-empty-notice">
-                {__('Your deck is empty. Try adding some cards using the search form above.', 'mtg4wp')}
+                {__('Your deck is empty. Try adding some cards using the search form above.', 'MTG4WP')}
             </Notice>
         );
     }
 
     return (
         <div className="mtg4wp-deck-list">
-            
             {deck.map((card, index) => {
-                const currentFace = card.faces?.[card.currentFace];
+                const faces = card.faces || [];
+                const currentFaceIndex = typeof card.currentFace === 'number' ? card.currentFace : 0;
+                const currentFace = faces[currentFaceIndex] || faces[0];
+                
                 if (!currentFace) return null;
-        
+
                 return (
-                    <div key={index} className="mtg4wp-card">
+                    <div key={`${card.id}-${index}`} className="mtg4wp-card">
                         <div className="mtg4wp-card-layout">
                             <div className="mtg4wp-card-image-wrapper">
                                 {currentFace.image && (
                                     <div className="mtg4wp-card-image-container">
                                         <img
                                             src={currentFace.image}
-                                            alt={currentFace.name}
+                                            alt={currentFace.name || card.name}
                                             className={`mtg4wp-card-img ${card.foil ? 'foil' : ''}`}
                                             onLoad={() => handleImageLoad(index)}
                                             style={{ display: imageLoading[index] ? 'none' : 'block' }}
@@ -66,19 +68,17 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
                                         onClick={() => onRemoveCard(index)}
                                         className="mtg4wp-remove-button"
                                     >
-                                        {__('Remove', 'mtg4wp')}
+                                        {__('Remove', 'MTG4WP')}
                                     </Button>
                                 </div>
 
-                                {/* Controls */}
                                 <div className="mtg4wp-card-controls">
-                                    {/* Quantity Control */}
                                     <div className="mtg4wp-control">
                                         <label 
                                             htmlFor={`quantity-${index}`}
                                             className="mtg4wp-control-label"
                                         >
-                                            {__('Quantity', 'mtg4wp')}
+                                            {__('Quantity', 'MTG4WP')}
                                         </label>
                                         <input
                                             id={`quantity-${index}`}
@@ -90,13 +90,12 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
                                         />
                                     </div>
 
-                                    {/* Section Control */}
                                     <div className="mtg4wp-control">
                                         <label 
                                             htmlFor={`section-${index}`}
                                             className="mtg4wp-control-label"
                                         >
-                                            {__('Section', 'mtg4wp')}
+                                            {__('Section', 'MTG4WP')}
                                         </label>
                                         <select
                                             id={`section-${index}`}
@@ -104,16 +103,15 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
                                             onChange={(e) => onUpdateCard(index, 'section', e.target.value)}
                                             className="mtg4wp-control-select"
                                         >
-                                            <option value="commander">{__('Commander', 'mtg4wp')}</option>
-                                            <option value="mainboard">{__('Mainboard', 'mtg4wp')}</option>
-                                            <option value="sideboard">{__('Sideboard', 'mtg4wp')}</option>
-                                            <option value="maybeboard">{__('Maybeboard', 'mtg4wp')}</option>
-                                            <option value="token">{__('Token', 'mtg4wp')}</option>
+                                            <option value="commander">{__('Commander', 'MTG4WP')}</option>
+                                            <option value="mainboard">{__('Mainboard', 'MTG4WP')}</option>
+                                            <option value="sideboard">{__('Sideboard', 'MTG4WP')}</option>
+                                            <option value="maybeboard">{__('Maybeboard', 'MTG4WP')}</option>
+                                            <option value="token">{__('Token', 'MTG4WP')}</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                {/* Actions */}
                                 <div className="mtg4wp-card-actions">
                                     {card.isDoubleFaced && (
                                         <Button
@@ -122,7 +120,7 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
                                             className="mtg4wp-flip-button"
                                             icon={flipHorizontal}
                                         >
-                                            {__('Flip', 'mtg4wp')}
+                                            {__('Flip', 'MTG4WP')}
                                         </Button>
                                     )}
                                     <label className="mtg4wp-checkbox-label">
@@ -132,7 +130,7 @@ const CardList = ({ deck = [], onRemoveCard, onUpdateCard, onFlipCard }) => {
                                             onChange={(e) => onUpdateCard(index, 'foil', e.target.checked)}
                                             className="mtg4wp-checkbox"
                                         />
-                                        <span>{__('Foil', 'mtg4wp')}</span>
+                                        <span>{__('Foil', 'MTG4WP')}</span>
                                     </label>
                                 </div>
                             </div>

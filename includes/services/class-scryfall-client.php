@@ -75,7 +75,7 @@ class ScryfallClient
                 usleep(self::RATE_LIMIT['retry_after'] * 1000);
                 return $this->make_request($url, $retries - 1);
             }
-            throw new \Exception(__('Rate limit exceeded. Please try again in a moment.', 'mtg4wp'));
+            throw new \Exception(__('Rate limit exceeded. Please try again in a moment.', 'MTG4WP'));
         }
 
         $response = wp_remote_get(

@@ -35,7 +35,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
             }
 
             if (queryParams.toString() === '') {
-                throw new Error(__('Please provide a card name or set and collector number.', 'mtg4wp'));
+                throw new Error(__('Please provide a card name or set and collector number.', 'MTG4WP'));
             }
     
             const response = await apiFetch({
@@ -59,7 +59,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
         } catch (err) {
             setAttributes({ 
                 searching: false,
-                error: err.message || __('An error occurred while searching for cards.', 'mtg4wp'),
+                error: err.message || __('An error occurred while searching for cards.', 'MTG4WP'),
             });
         }
     };
@@ -71,40 +71,40 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
             <div className="mtg4wp-section-header">
                 <div className="mtg4wp-header-content">
                     <Heading level={2}>
-                        {__('Add Cards', 'mtg4wp')}
+                        {__('Add Cards', 'MTG4WP')}
                     </Heading>
                     <Button 
                         variant="secondary"
                         onClick={onOpenImporter}
                         className="mtg4wp-import-button"
                     >
-                        {__('Import Deck', 'mtg4wp')}
+                        {__('Import Deck', 'MTG4WP')}
                     </Button>
                 </div>
             </div>
             
             <TextControl
-                label={__('Card Name', 'mtg4wp')}
+                label={__('Card Name', 'MTG4WP')}
                 value={searchTerm}
                 onChange={setSearchTerm}
-                placeholder={__('e.g. Lightning Bolt', 'mtg4wp')}
-                help={__('Enter the name of the card you want to add', 'mtg4wp')}
+                placeholder={__('e.g. Lightning Bolt', 'MTG4WP')}
+                help={__('Enter the name of the card you want to add', 'MTG4WP')}
             />
             
             <TextControl
-                label={__('Set Code', 'mtg4wp')}
+                label={__('Set Code', 'MTG4WP')}
                 value={searchSet}
                 onChange={setSearchSet}
-                placeholder={__('e.g. MOM', 'mtg4wp')}
-                help={__('Enter the three-letter set code', 'mtg4wp')}
+                placeholder={__('e.g. MOM', 'MTG4WP')}
+                help={__('Enter the three-letter set code', 'MTG4WP')}
             />
             
             <TextControl
-                label={__('Card Number', 'mtg4wp')}
+                label={__('Card Number', 'MTG4WP')}
                 value={searchNumber}
                 onChange={setSearchNumber}
-                placeholder={__('e.g. 61', 'mtg4wp')}
-                help={__('Enter the collector number', 'mtg4wp')}
+                placeholder={__('e.g. 61', 'MTG4WP')}
+                help={__('Enter the collector number', 'MTG4WP')}
             />
             
             <Button 
@@ -113,7 +113,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 disabled={isSearchDisabled}
                 isBusy={searching}
             >
-                {searching ? __('Searching...', 'mtg4wp') : __('Add Card', 'mtg4wp')}
+                {searching ? __('Searching...', 'MTG4WP') : __('Add Card', 'MTG4WP')}
             </Button>
             
             {error && (

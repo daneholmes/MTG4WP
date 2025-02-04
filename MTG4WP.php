@@ -9,7 +9,7 @@
  * Author URI: https://daneholmes.com
  * License: GPL-3.0-only
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: mtg4wp
+ * Text Domain: MTG4WP
  * Requires at least: 6.1
  * Requires PHP: 7.4
  */
@@ -76,7 +76,7 @@ function activate()
     if (version_compare($wp_version, '6.1', '<') || version_compare(PHP_VERSION, '7.4', '<')) {
         deactivate_plugins(plugin_basename(__FILE__));
         wp_die(
-            esc_html__('This plugin requires WordPress 6.1 or higher and PHP 7.4 or higher.', 'mtg4wp'),
+            esc_html__('This plugin requires WordPress 6.1 or higher and PHP 7.4 or higher.', 'MTG4WP'),
             'Plugin Activation Error',
             ['response' => 200, 'back_link' => true]
         );

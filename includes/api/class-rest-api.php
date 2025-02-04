@@ -29,16 +29,16 @@ class RestAPI
             'type'       => 'object',
             'properties' => [
                 'name'   => [
-                    'description' => __('The name of the card to search for', 'mtg4wp'),
+                    'description' => __('The name of the card to search for', 'MTG4WP'),
                     'type'       => 'string',
                 ],
                 'set'    => [
-                    'description' => __('The three-letter set code', 'mtg4wp'),
+                    'description' => __('The three-letter set code', 'MTG4WP'),
                     'type'       => 'string',
                     'pattern'    => '^[a-zA-Z0-9]{3,}$',
                 ],
                 'number' => [
-                    'description' => __('The collector number', 'mtg4wp'),
+                    'description' => __('The collector number', 'MTG4WP'),
                     'type'       => 'string',
                 ],
             ],
@@ -69,7 +69,7 @@ class RestAPI
                                 }
                                 return true;
                             },
-                            'description'       => __('Search for a card by name.', 'mtg4wp'),
+                            'description'       => __('Search for a card by name.', 'MTG4WP'),
                         ],
                         'set'    => [
                             'required'          => false,
@@ -78,7 +78,7 @@ class RestAPI
                             'validate_callback' => function ($param) {
                                 return $param === null || !empty(trim($param));
                             },
-                            'description'       => __('Set code (e.g., "MID" for Midnight Hunt).', 'mtg4wp'),
+                            'description'       => __('Set code (e.g., "MID" for Midnight Hunt).', 'MTG4WP'),
                         ],
                         'number' => [
                             'required'          => false,
@@ -87,7 +87,7 @@ class RestAPI
                             'validate_callback' => function ($param) {
                                 return $param === null || !empty(trim($param));
                             },
-                            'description'       => __('Collector number of the card.', 'mtg4wp'),
+                            'description'       => __('Collector number of the card.', 'MTG4WP'),
                         ],
                     ],
                     'schema'             => $schema,
@@ -107,7 +107,7 @@ class RestAPI
                     'cards' => [
                         'required'    => true,
                         'type'        => 'array',
-                        'description' => __('Array of card objects to sort.', 'mtg4wp'),
+                        'description' => __('Array of card objects to sort.', 'MTG4WP'),
                     ],
                 ],
             ]
@@ -126,7 +126,7 @@ class RestAPI
                         'required'          => true,
                         'type'             => 'string',
                         'sanitize_callback' => 'sanitize_textarea_field',
-                        'description'       => __('Raw deck list text to import.', 'mtg4wp'),
+                        'description'       => __('Raw deck list text to import.', 'MTG4WP'),
                     ],
                 ],
             ]
@@ -148,7 +148,7 @@ class RestAPI
             if (!$card) {
                 return new WP_Error(
                     'card_not_found',
-                    __('No card found with the provided parameters.', 'mtg4wp'),
+                    __('No card found with the provided parameters.', 'MTG4WP'),
                     ['status' => 404]
                 );
             }
@@ -171,7 +171,7 @@ class RestAPI
             if (empty($cards)) {
                 return new WP_Error(
                     'invalid_parameters',
-                    __('No cards provided to sort.', 'mtg4wp'),
+                    __('No cards provided to sort.', 'MTG4WP'),
                     ['status' => 400]
                 );
             }
@@ -197,7 +197,7 @@ class RestAPI
             if (empty($result['cards']) && !empty($result['errors'])) {
                 return new WP_Error(
                     'import_failed',
-                    __('Failed to import deck list.', 'mtg4wp'),
+                    __('Failed to import deck list.', 'MTG4WP'),
                     [
                         'status' => 400,
                         'errors' => $result['errors'],

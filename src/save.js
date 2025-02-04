@@ -45,7 +45,7 @@ const Save = ({ attributes }) => {
                                         <span className="mtg4wp-card-name">{card.name}</span>
                                         {card.foil && (
                                             <span className="mtg4wp-card-foil">
-                                                {__('*F*', 'mtg4wp')}
+                                                {__('*F*', 'MTG4WP')}
                                             </span>
                                         )}
                                         <span className="mtg4wp-card-set">

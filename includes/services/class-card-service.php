@@ -74,8 +74,23 @@ class CardService
 
         // Convert from raw data to Card objects if needed
         $card_objects = array_map(
-            function ($card) {
-                return $card instanceof Card ? $card : new Card($card);
+            function ($card_data) {
+                if ($card_data instanceof Card) {
+                    return $card_data;
+                }
+
+                // Create new Card object preserving the current state
+                $card = new Card($card_data);
+                if (isset($card_data['quantity'])) {
+                    $card->set_quantity($card_data['quantity']);
+                }
+                if (isset($card_data['section'])) {
+                    $card->set_section($card_data['section']);
+                }
+                if (isset($card_data['foil'])) {
+                    $card->set_foil($card_data['foil']);
+                }
+                return $card;
             },
             $cards
         );
@@ -107,7 +122,7 @@ class CardService
             }
         );
 
-        // Convert back to block format
+        // Convert back to block format while preserving all card data
         return array_map(
             function (Card $card) {
                 return $card->to_block_format();

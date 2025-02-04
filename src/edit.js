@@ -58,11 +58,15 @@ const Edit = ({ attributes, setAttributes }) => {
             const response = await apiFetch({
                 path: '/mtg4wp/v1/deck/sort',
                 method: 'POST',
-                data: { cards: deck },
+                data: { cards: deck.map(card => card) },
             });
+            
+            // Update the deck with the sorted response
             setAttributes({ deck: response });
         } catch (err) {
-            setAttributes({ error: __('Error sorting deck.', 'mtg4wp') });
+            setAttributes({ 
+                error: __('Error sorting deck.', 'MTG4WP'),
+            });
         }
     };
 
@@ -75,14 +79,14 @@ const Edit = ({ attributes, setAttributes }) => {
     return (
         <div {...blockProps}>
             <InspectorControls>
-                <PanelBody title={__('Deck Settings', 'mtg4wp')} initialOpen={true}>
+                <PanelBody title={__('Deck Settings', 'MTG4WP')} initialOpen={true}>
                     <PanelRow>
                         <Button
                             variant="secondary"
                             onClick={handleSortDeck}
                             disabled={!deck.length}
                         >
-                            {__('Sort Deck', 'mtg4wp')}
+                            {__('Sort Deck', 'MTG4WP')}
                         </Button>
                     </PanelRow>
                 </PanelBody>

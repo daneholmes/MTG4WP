@@ -66,7 +66,7 @@ class Card
             if (empty($data[$field])) {
                 throw new \InvalidArgumentException(
                     sprintf(
-                        esc_html__('Missing required field: %s', 'mtg4wp'),
+                        esc_html__('Missing required field: %s', 'MTG4WP'),
                         $field
                     )
                 );
@@ -78,21 +78,21 @@ class Card
     public function to_block_format(): array
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
-            'set'             => $this->set,
-            'collector_number' => $this->collector_number,
-            'type_line'       => $this->type_line,
-            'primary_type'    => $this->primary_type,
-            'cmc'             => $this->cmc,
-            'faces'           => $this->faces,
-            'layout'          => $this->layout,
-            'rarity'          => $this->rarity,
-            'isDoubleFaced'   => $this->is_double_faced,
-            'quantity'        => $this->quantity,
-            'foil'            => $this->foil,
-            'section'         => $this->section,
-            'currentFace'     => $this->current_face,
+            'id'               => $this->get_id(),
+            'name'             => $this->get_name(),
+            'set'              => $this->get_set(),
+            'collector_number' => $this->get_collector_number(),
+            'type_line'        => $this->get_type_line(),
+            'primary_type'     => $this->get_primary_type(),
+            'cmc'              => $this->get_cmc(),
+            'faces'            => $this->get_faces(),
+            'layout'           => $this->get_layout(),
+            'rarity'           => $this->get_rarity(),
+            'isDoubleFaced'    => $this->is_double_faced(),
+            'quantity'         => $this->get_quantity(),
+            'foil'             => $this->is_foil(),
+            'section'          => $this->get_section(),
+            'currentFace'      => (int) array_key_exists($this->current_face, $this->faces) ? $this->current_face : 0,
         ];
     }
 
@@ -145,7 +145,7 @@ class Card
             return 'planeswalker';
         }
         if (in_array('land', $types, true)) {
-            return 'planeswalker';
+            return 'land';
         }
 
         // Look for other recognized types
@@ -158,7 +158,7 @@ class Card
         return 'artifact';
     }
 
-    // Calculate converted mana cost.
+    // Calculate converted mana cost
     private function calculate_cmc(array $data): float
     {
         if (isset($data['cmc'])) {
@@ -192,32 +192,55 @@ class Card
     {
         $faces = [];
 
-        if (isset($data['card_faces']) && is_array($data['card_faces'])) {
-            foreach ($data['card_faces'] as $face) {
+        // Handle pre-formatted faces from sorted data
+        if (isset($data['faces']) && is_array($data['faces'])) {
+            foreach ($data['faces'] as $face) {
                 $faces[] = [
                     'name'        => sanitize_text_field($face['name']),
                     'type_line'   => sanitize_text_field($face['type_line'] ?? ''),
                     'oracle_text' => wp_kses_post($face['oracle_text'] ?? ''),
-                    'image'       => esc_url_raw($face['image_uris']['normal'] ?? ''),
+                    'image'       => esc_url_raw($face['image'] ?? ''),
                     'mana_cost'   => sanitize_text_field($face['mana_cost'] ?? ''),
                 ];
             }
             return $faces;
         }
 
-        // Single-faced card
+        // Handle card_faces from Scryfall data
+        if (isset($data['card_faces']) && is_array($data['card_faces'])) {
+            foreach ($data['card_faces'] as $face) {
+                $image_uri = isset($face['image_uris']['normal']) ?
+                    $face['image_uris']['normal'] :
+                    ($face['image'] ?? '');
+
+                $faces[] = [
+                    'name'        => sanitize_text_field($face['name']),
+                    'type_line'   => sanitize_text_field($face['type_line'] ?? ''),
+                    'oracle_text' => wp_kses_post($face['oracle_text'] ?? ''),
+                    'image'       => esc_url_raw($image_uri),
+                    'mana_cost'   => sanitize_text_field($face['mana_cost'] ?? ''),
+                ];
+            }
+            return $faces;
+        }
+
+        // Handle single-faced card
+        $image_uri = isset($data['image_uris']['normal']) ?
+            $data['image_uris']['normal'] :
+            ($data['image'] ?? '');
+
         $faces[] = [
             'name'        => $this->name,
             'type_line'   => $this->type_line,
             'oracle_text' => wp_kses_post($data['oracle_text'] ?? ''),
-            'image'       => esc_url_raw($data['image_uris']['normal'] ?? ''),
+            'image'       => esc_url_raw($image_uri),
             'mana_cost'   => sanitize_text_field($data['mana_cost'] ?? ''),
         ];
 
         return $faces;
     }
 
-    //Determine if card is double-faced
+    // Determine if card is double-faced
     private function determine_if_double_faced(): bool
     {
         return in_array(
@@ -233,7 +256,7 @@ class Card
         return $this->faces;
     }
 
-    //Get current face
+    // Get current face
     public function get_current_face(): ?array
     {
         return $this->faces[$this->current_face] ?? null;
@@ -269,5 +292,59 @@ class Card
     public function get_section(): string
     {
         return $this->section;
+    }
+
+    // Get ID
+    public function get_id(): string
+    {
+        return $this->id;
+    }
+
+    // Get quantity
+    public function get_quantity(): int
+    {
+        return $this->quantity;
+    }
+
+    // Get foil status
+    public function is_foil(): bool
+    {
+        return $this->foil;
+    }
+
+    // Get is double faced status
+    public function is_double_faced(): bool
+    {
+        return $this->is_double_faced;
+    }
+
+    // Get set
+    public function get_set(): string
+    {
+        return $this->set;
+    }
+
+    // Get collector number
+    public function get_collector_number(): string
+    {
+        return $this->collector_number;
+    }
+
+    // Get type line
+    public function get_type_line(): string
+    {
+        return $this->type_line;
+    }
+
+    // Get layout
+    public function get_layout(): string
+    {
+        return $this->layout;
+    }
+
+    // Get rarity
+    public function get_rarity(): string
+    {
+        return $this->rarity;
     }
 }
