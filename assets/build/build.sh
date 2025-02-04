@@ -35,8 +35,8 @@ convert_readme() {
     # Create readme.txt header
     {
         echo "=== ${PLUGIN_NAME} ==="
-        echo "Contributors: Dane Holmes"
-        echo "Tags: block, editor, gutenberg, gutenberg blocks, magic"
+        echo "Contributors: daneholmes"
+        echo "Tags: magic, mtg, trading card game, wordpress"
         echo "Requires at least: ${REQUIRES_WP}"
         echo "Requires PHP: ${REQUIRES_PHP}"
         echo "Tested up to: ${TESTED_UP_TO}"
@@ -53,12 +53,35 @@ convert_readme() {
             grep -v "^## " | sed 's/^- //' | sed '/^$/d'
         
         echo ""
+        echo "=== Legal Notice ==="
+        awk '/^## Legal Notice/,/^##/{
+            if (!/^## / && NF) print
+        }' "$input_file"
+        
+        echo ""
         echo "== Installation =="
         echo "1. Navigate to Plugins > Add New in your WordPress dashboard"
         echo "2. Search for \"${PLUGIN_NAME}\""
         echo "3. Click \"Install Now\" and then \"Activate\""
         echo ""
-        echo "For detailed installation instructions, please read the extensive [installation instructions](#)."
+        echo "Alternatively, you can manually upload the plugin:"
+        echo "1. Download the latest release"
+        echo "2. Upload the plugin files to '/wp-content/plugins/${PLUGIN_NAME}'"
+        echo "3. Activate the plugin through the 'Plugins' screen in WordPress"
+        
+        echo ""
+        echo "== Frequently Asked Questions =="
+        echo ""
+        echo "= How do I add a deck? ="
+        awk '/^### Adding a Deck/,/^###/{
+            if (!/^### / && NF) print
+        }' "$input_file"
+        
+        echo ""
+        echo "= Where can I find collector numbers and set codes? ="
+        awk '/^### Finding Collector Numbers/,/(^###|^## )/{
+            if (!/^### / && NF) print
+        }' "$input_file"
         
         echo ""
         echo "== Changelog =="
@@ -112,7 +135,22 @@ convert_readme "readme.md" "$TEMP_DIR/$PLUGIN_NAME/readme.txt"
 echo "📋 Copying files..."
 cp "$MAIN_PHP_FILE" "$TEMP_DIR/$PLUGIN_NAME/"
 cp LICENSE{,.txt}(N) "$TEMP_DIR/$PLUGIN_NAME/" 2>/dev/null || echo "⚠️ No LICENSE file found"
-cp -r includes/*/class-*.php(N) "$TEMP_DIR/$PLUGIN_NAME/includes/" 2>/dev/null || echo "⚠️ No class files found"
+
+# Copy class files maintaining directory structure
+echo "📋 Copying class files..."
+local class_dirs=("api" "models" "services")
+for dir in $class_dirs; do
+    # Create directory if it has files to copy
+    if [[ -n "$(ls includes/$dir/class-*.php 2>/dev/null)" ]]; then
+        mkdir -p "$TEMP_DIR/$PLUGIN_NAME/includes/$dir"
+        cp includes/$dir/class-*.php "$TEMP_DIR/$PLUGIN_NAME/includes/$dir/" 2>/dev/null
+    fi
+done
+
+# Copy root level class files
+cp includes/class-*.php "$TEMP_DIR/$PLUGIN_NAME/includes/" 2>/dev/null
+
+# Copy build directory
 cp -r build "$TEMP_DIR/$PLUGIN_NAME/"
 
 # Create distribution zip
