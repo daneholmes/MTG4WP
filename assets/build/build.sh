@@ -24,40 +24,22 @@ convert_readme() {
     local REQUIRES_PHP=$(grep "Requires PHP:" "$main_php_file" | cut -d':' -f2 | xargs)
     local TESTED_UP_TO=$(grep "Tested up to:" "$main_php_file" | cut -d':' -f2 | xargs)
 
-    # Extract first sentence from Overview section for short description
-    local DESCRIPTION=$(awk '/^## Overview/{p=1;next} /^##/{p=0} p' "$input_file" | \
-        sed -e 's/^- //' \
-            -e 's/\[\([^]]*\)\]([^)]*)/*\1*/g' \
-            -e 's/`\([^`]*\)`/*\1*/g' | \
-        tr -d '\n' | sed 's/  */ /g' | sed 's/^ *//' | sed 's/ *$//' | \
-        awk -F. '{ print $1 "." }')
-
     # Create readme.txt header
     {
         echo "=== ${PLUGIN_NAME} ==="
-        echo "Contributors: daneholmes"
-        echo "Tags: magic, mtg, trading card game, wordpress"
+        echo "Contributors: Dane Holmes"
+        echo "Tags: block, editor, gutenberg, gutenberg blocks, Magic"
         echo "Requires at least: ${REQUIRES_WP}"
         echo "Requires PHP: ${REQUIRES_PHP}"
         echo "Tested up to: ${TESTED_UP_TO}"
         echo "Stable tag: ${PLUGIN_VERSION}"
         echo "License: GPLv3"
         echo "License URI: https://www.gnu.org/licenses/gpl-3.0.html"
-        echo ""
-        echo "${DESCRIPTION}"
+        echo "Seamlessly display Magic: The Gathering© cards on your WordPress website."
         echo ""
         echo "== Description =="
-        
-        # Extract full description including legal notice
-        awk '/^## Overview/,/^## Prerequisites/' "$input_file" | \
-            grep -v "^## " | sed 's/^- //' | sed '/^$/d'
-        
-        echo ""
-        echo "=== Legal Notice ==="
-        awk '/^## Legal Notice/,/^##/{
-            if (!/^## / && NF) print
-        }' "$input_file"
-        
+        echo 'MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.'
+
         echo ""
         echo "== Installation =="
         echo "1. Navigate to Plugins > Add New in your WordPress dashboard"
@@ -65,23 +47,12 @@ convert_readme() {
         echo "3. Click \"Install Now\" and then \"Activate\""
         echo ""
         echo "Alternatively, you can manually upload the plugin:"
-        echo "1. Download the latest release"
+        echo "1. Download the latest release of MTG4WP"
         echo "2. Upload the plugin files to '/wp-content/plugins/${PLUGIN_NAME}'"
         echo "3. Activate the plugin through the 'Plugins' screen in WordPress"
         
         echo ""
         echo "== Frequently Asked Questions =="
-        echo ""
-        echo "= How do I add a deck? ="
-        awk '/^### Adding a Deck/,/^###/{
-            if (!/^### / && NF) print
-        }' "$input_file"
-        
-        echo ""
-        echo "= Where can I find collector numbers and set codes? ="
-        awk '/^### Finding Collector Numbers/,/(^###|^## )/{
-            if (!/^### / && NF) print
-        }' "$input_file"
         
         echo ""
         echo "== Changelog =="
@@ -92,20 +63,23 @@ convert_readme() {
             /^## [^C]/ { in_changelog=0; next }
             in_changelog {
                 if ($0 ~ /^### [0-9]+\.[0-9]+\.[0-9]+/) {
+                    if (version_count > 0) {
+                        print ""
+                    }
                     version = $2
                     print "= " version " ="
+                    version_count++
                 }
                 else if ($0 ~ /^- /) {
                     print "- " substr($0, 3)
                 }
-                else if (NF == 0 && prev_line !~ /^== Changelog/) {
-                    print ""
-                }
             }
-            { prev_line = $0 }
         ' "$input_file"
-        
 
+        echo ""
+        echo "=== Legal Notice ==="
+        echo "Magic Decks and Cards is unofficial Fan Content permitted under the Fan Content Policy."
+        echo "Disclaimer: Not approved/endorsed by Wizards of the Coast. Portions of the materials used are property of Wizards of the Coast LLC. ©Wizards of the Coast LLC."
     } > "$output_file"
 
     echo "✓ Converted readme.md to readme.txt: $output_file"
