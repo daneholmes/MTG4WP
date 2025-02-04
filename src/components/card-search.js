@@ -87,7 +87,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 label={__('Card Name', 'MTG4WP')}
                 value={searchTerm}
                 onChange={setSearchTerm}
-                placeholder={__('e.g. Lightning Bolt', 'MTG4WP')}
+                placeholder={__("e.g. Sensei's Divining Top", 'MTG4WP')}
                 help={__('Enter the name of the card you want to add', 'MTG4WP')}
             />
             
@@ -95,7 +95,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 label={__('Set Code', 'MTG4WP')}
                 value={searchSet}
                 onChange={setSearchSet}
-                placeholder={__('e.g. MOM', 'MTG4WP')}
+                placeholder={__('e.g. chk', 'MTG4WP')}
                 help={__('Enter the three-letter set code', 'MTG4WP')}
             />
             
@@ -103,7 +103,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 label={__('Card Number', 'MTG4WP')}
                 value={searchNumber}
                 onChange={setSearchNumber}
-                placeholder={__('e.g. 61', 'MTG4WP')}
+                placeholder={__('e.g. 268', 'MTG4WP')}
                 help={__('Enter the collector number', 'MTG4WP')}
             />
             

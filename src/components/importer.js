@@ -44,7 +44,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
     };
 
     const placeholderText = `4 Lightning Bolt (sld) 901 *F* [mainboard]
-2 Spell Pierce
+3 Murktide Regent
 3 Steam Vents (grn)
 1 Blood Moon [sideboard]
 `;
