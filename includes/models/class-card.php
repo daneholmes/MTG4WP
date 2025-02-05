@@ -29,17 +29,19 @@ class Card
     {
         $this->validate_data($data);
 
-        // Core card properties
+        // Core card properties that other methods depend on
         $this->id = sanitize_text_field($data['id']);
         $this->name = sanitize_text_field($data['name']);
         $this->type_line = sanitize_text_field($data['type_line'] ?? '');
-        $this->primary_type = $this->determine_primary_type();
         $this->cmc = (float) ($data['cmc'] ?? 0.0);
         $this->layout = sanitize_text_field($data['layout'] ?? 'normal');
 
-        // Process faces data
+        // Process faces data before determining types
         $this->faces = $this->process_faces($data);
         $this->is_double_faced = $this->determine_if_double_faced();
+
+        // Determine the primary type after faces are set
+        $this->primary_type = $this->determine_primary_type();
 
         // Deck-specific properties
         $this->quantity = 1;
@@ -88,14 +90,23 @@ class Card
     // Determines the primary type of a card based on its type line
     private function determine_primary_type(): string
     {
-        $type_line = strtolower($this->type_line);
+        // For double-faced cards, we only want to use the front face's type line
+        $type_line = $this->determine_if_double_faced()
+            ? strtolower($this->faces[0]['type_line'] ?? '')
+            : strtolower($this->type_line);
 
         // Check in order of precedence
+        if (strpos($type_line, 'token') !== false) {
+            return 'token';
+        }
         if (strpos($type_line, 'creature') !== false) {
             return 'creature';
         }
         if (strpos($type_line, 'planeswalker') !== false) {
             return 'planeswalker';
+        }
+        if (strpos($type_line, 'land') !== false) {
+            return 'land';
         }
         if (strpos($type_line, 'battle') !== false) {
             return 'battle';
@@ -112,10 +123,6 @@ class Card
         if (strpos($type_line, 'sorcery') !== false) {
             return 'sorcery';
         }
-        if (strpos($type_line, 'land') !== false) {
-            return 'land';
-        }
-
         return 'other';
     }
 
@@ -124,7 +131,7 @@ class Card
     {
         return in_array(
             $this->layout,
-            ['transform', 'modal_dfc', 'double_faced_token', 'battle'],
+            ['transform', 'modal_dfc', 'double_faced_token'],
             true
         );
     }
