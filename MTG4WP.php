@@ -1,20 +1,20 @@
 <?php
 
 /**
- * Plugin Name: MTG4WP
- * Plugin URI: https://github.com/daneholmes/MTG4WP
+ * Plugin Name: mtg4wp
+ * Plugin URI: https://github.com/daneholmes/mtg4wp
  * Description: Seamlessly display Magic: The Gathering© cards on your WordPress website.
  * Version: 1.0.0
  * Author: Dane Holmes
  * Author URI: https://daneholmes.com
  * License: GPL-3.0-only
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: MTG4WP
+ * Text Domain: mtg4wp
  * Requires at least: 6.1
  * Requires PHP: 7.4
  */
 
-namespace MTG4WP;
+namespace mtg4wp;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -24,11 +24,9 @@ if (!defined('ABSPATH')) {
 define('MTG4WP_VERSION', '1.0.0');
 define('MTG4WP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MTG4WP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('MTG4WP_PLUGIN_FILE', __FILE__);
 
 // Required files
 require_once MTG4WP_PLUGIN_DIR . 'includes/models/class-card.php';
-require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-cache-service.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-card-service.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-scryfall-client.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/api/class-rest-api.php';
@@ -38,9 +36,8 @@ require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-plugin-lifecycle.php';
 function init()
 {
     // Initialize services
-    $cache_service = new Services\CacheService();
     $scryfall_client = new Services\ScryfallClient();
-    $card_service = new Services\CardService($scryfall_client, $cache_service);
+    $card_service = new Services\CardService($scryfall_client);
     new API\RestAPI($card_service);
 
     // Register block
@@ -67,6 +64,3 @@ function enqueue_editor_assets()
     );
 }
 add_action('enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_editor_assets');
-
-// Register lifecycle hooks
-PluginLifecycle::register_hooks();
