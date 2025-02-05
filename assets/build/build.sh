@@ -38,7 +38,7 @@ convert_readme() {
         echo "Seamlessly display Magic: The Gathering© cards on your WordPress website."
         echo ""
         echo "== Description =="
-        echo 'MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.'
+        echo 'mtg4wp is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.'
 
         echo ""
         echo "== Installation =="
@@ -47,7 +47,7 @@ convert_readme() {
         echo "3. Click \"Install Now\" and then \"Activate\""
         echo ""
         echo "Alternatively, you can manually upload the plugin:"
-        echo "1. Download the latest release of MTG4WP"
+        echo "1. Download the latest release of mtg4wp"
         echo "2. Upload the plugin files to '/wp-content/plugins/${PLUGIN_NAME}'"
         echo "3. Activate the plugin through the 'Plugins' screen in WordPress"
         
