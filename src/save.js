@@ -3,7 +3,6 @@ import { useBlockProps } from '@wordpress/block-editor';
 const Save = ({ attributes }) => {
     const { deck = [] } = attributes;
     
-    // Get block props with proper className for frontend
     const blockProps = useBlockProps.save({
         className: 'wp-block-mtg4wp-deck'
     });
@@ -46,7 +45,8 @@ const Save = ({ attributes }) => {
                 enchantment: [],
                 instant: [],
                 sorcery: [],
-                land: []
+                land: [],
+                other: []
             },
             sideboard: [],
             maybeboard: [],
@@ -55,8 +55,14 @@ const Save = ({ attributes }) => {
 
         deck.forEach(card => {
             if (card.section === 'mainboard') {
-                organized.mainboard[card.primary_type].push(card);
-            } else {
+                // Use primary_type from the backend
+                const type = card.primary_type || 'other';
+                if (organized.mainboard[type]) {
+                    organized.mainboard[type].push(card);
+                } else {
+                    organized.mainboard.other.push(card);
+                }
+            } else if (organized[card.section]) {
                 organized[card.section].push(card);
             }
         });

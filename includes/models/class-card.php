@@ -7,6 +7,7 @@ class Card
     private string $id;
     private string $name;
     private string $type_line;
+    private string $primary_type;
     private float $cmc;
     private array $faces;
     private string $layout;
@@ -32,6 +33,7 @@ class Card
         $this->id = sanitize_text_field($data['id']);
         $this->name = sanitize_text_field($data['name']);
         $this->type_line = sanitize_text_field($data['type_line'] ?? '');
+        $this->primary_type = $this->determine_primary_type();
         $this->cmc = (float) ($data['cmc'] ?? 0.0);
         $this->layout = sanitize_text_field($data['layout'] ?? 'normal');
 
@@ -83,6 +85,40 @@ class Card
         ]];
     }
 
+    // Determines the primary type of a card based on its type line
+    private function determine_primary_type(): string
+    {
+        $type_line = strtolower($this->type_line);
+
+        // Check in order of precedence
+        if (strpos($type_line, 'creature') !== false) {
+            return 'creature';
+        }
+        if (strpos($type_line, 'planeswalker') !== false) {
+            return 'planeswalker';
+        }
+        if (strpos($type_line, 'battle') !== false) {
+            return 'battle';
+        }
+        if (strpos($type_line, 'artifact') !== false) {
+            return 'artifact';
+        }
+        if (strpos($type_line, 'enchantment') !== false) {
+            return 'enchantment';
+        }
+        if (strpos($type_line, 'instant') !== false) {
+            return 'instant';
+        }
+        if (strpos($type_line, 'sorcery') !== false) {
+            return 'sorcery';
+        }
+        if (strpos($type_line, 'land') !== false) {
+            return 'land';
+        }
+
+        return 'other';
+    }
+
     // Determines if card is double-faced based on layout
     private function determine_if_double_faced(): bool
     {
@@ -100,6 +136,7 @@ class Card
             'id' => $this->id,
             'name' => $this->name,
             'type_line' => $this->type_line,
+            'primary_type' => $this->primary_type,
             'cmc' => $this->cmc,
             'faces' => $this->faces,
             'layout' => $this->layout,
@@ -140,6 +177,11 @@ class Card
     public function get_quantity(): int
     {
         return $this->quantity;
+    }
+
+    public function get_primary_type(): string
+    {
+        return $this->primary_type;
     }
 
     public function is_foil(): bool
