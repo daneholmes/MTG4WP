@@ -136,28 +136,32 @@ class CardService
         foreach ($lines as $index => $line) {
             try {
                 $card_data = $this->parse_deck_list_line($line);
+                $scryfall_data = null;
 
-                // First try to get the card by set/number
-                $scryfall_data = $this->scryfall_client->get_card_by_set_id(
-                    $card_data['name'],
-                    $card_data['set'],
-                    $card_data['number']
-                );
+                // First try to get the card by set/number if both are provided
+                if (!empty($card_data['set']) && !empty($card_data['number'])) {
+                    $scryfall_data = $this->scryfall_client->get_card_by_set_id(
+                        $card_data['set'],
+                        $card_data['number']
+                    );
+                }
 
+                // Fallback to name lookup if set/number lookup failed or wasn't possible
                 if (!$scryfall_data) {
-                    // Fallback to name lookup
                     $scryfall_data = $this->scryfall_client->get_card_by_name(
                         $card_data['name'],
-                        $card_data['set']
+                        $card_data['set'] ?? null
                     );
                 }
 
                 if (!$scryfall_data) {
-                    throw new \Exception('Card not found');
+                    throw new \Exception(
+                        sprintf(
+                            __('Card "%s" not found', 'l4m4w'),
+                            $card_data['name']
+                        )
+                    );
                 }
-
-                // Cache the result
-                $this->cache_service->store_card($scryfall_data);
 
                 $card = new Card($scryfall_data);
                 $card->set_quantity($card_data['quantity']);
