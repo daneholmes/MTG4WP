@@ -6,7 +6,7 @@
     "title": "Deck",
     "category": "widgets",
     "icon": "list-view",
-    "description": "Display Magic: The Gathering decks and card tooltips.",
+    "description": "Seamlessly display Magic: The Gathering© cards on your WordPress website.",
     "keywords": ["mtg", "magic", "cards", "deck"],
     "supports": {
         "html": false,
@@ -25,7 +25,7 @@
             "background": true
         }
     },
-    "textdomain": "MTG4WP",
+    "textdomain": "mtg4wp",
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",
     "style": "file:./style-index.css",
@@ -38,58 +38,87 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Unique Scryfall ID of the card",
+                        "required": true
                     },
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Card name",
+                        "required": true
                     },
                     "set": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Card set-code (deprecated)",
+                        "required": false
                     },
                     "collector_number": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Card collector number. Related to set (deprecated)",
+                        "required": false
                     },
                     "type_line": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Full type-line of the card",
+                        "required": false
                     },
                     "primary_type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Primary card type",
+                        "required": false
                     },
                     "cmc": {
-                        "type": "number"
+                        "type": "number",
+                        "description": "Converted mana cost"
                     },
                     "quantity": {
                         "type": "number",
-                        "default": 1
+                        "minimum": 1,
+                        "default": 1,
+                        "description": "Number of copies"
                     },
                     "foil": {
                         "type": "boolean",
-                        "default": false
+                        "default": false,
+                        "description": "Whether the card is foil"
                     },
                     "section": {
                         "type": "string",
                         "enum": ["commander", "mainboard", "sideboard", "maybeboard", "token"],
-                        "default": "mainboard"
+                        "default": "mainboard",
+                        "description": "Which section of the deck the card belongs to"
                     },
                     "faces": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
-                                "name": { "type": "string" },
-                                "type_line": { "type": "string" },
-                                "oracle_text": { "type": "string" },
-                                "image": { "type": "string" },
-                                "mana_cost": { "type": "string" }
+                                "name": { 
+                                    "type": "string",
+                                    "description": "Name of this face",
+                                    "required": true
+                                },
+                                "type_line": { 
+                                    "type": "string",
+                                    "description": "Full type-line of this face"
+                                },
+                                "image": { 
+                                    "type": "string",
+                                    "description": "URI of this face's image"
+                                },
+                                "mana_cost": { 
+                                    "type": "string",
+                                    "description": "Mana cost of this face"
+                                }
                             }
                         }
                     },
                     "currentFace": {
                         "type": "number",
-                        "default": 0
+                        "default": 0,
+                        "description": "Index of the currently displayed face"
                     }
-                },
-                "required": ["id", "name", "set", "collector_number"]
+                }
             }
         },
         "importText": {
@@ -124,14 +153,12 @@
                 {
                     "id": "9457b5d3-5e48-4ce1-8c88-1d1600688b1f",
                     "name": "Stroke of Genius",
-                    "set": "usg",
-                    "collector_number": "100",
+                    "type_line": "Instant",
                     "quantity": 1,
                     "section": "mainboard",
                     "faces": [{
                         "name": "Stroke of Genius",
                         "type_line": "Instant",
-                        "oracle_text": "Target player draws X cards.",
                         "mana_cost": "{X}{2}{U}"
                     }]
                 }
