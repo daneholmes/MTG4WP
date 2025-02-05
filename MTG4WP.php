@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name: mtg4wp
- * Plugin URI: https://github.com/daneholmes/mtg4wp
+ * Plugin Name: MTG4WP
+ * Plugin URI: https://github.com/daneholmes/MTG4WP
  * Description: Seamlessly display Magic: The Gathering© cards on your WordPress website.
  * Version: 1.0.0
  * Author: Dane Holmes
