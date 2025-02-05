@@ -51,12 +51,12 @@ class Card
     {
         if (empty($data['id'])) {
             throw new \InvalidArgumentException(
-                esc_html__('Card data must include Scryfall ID.', 'mtg4wp')
+                esc_html__('Card data must include Scryfall ID.', 'l4m4w')
             );
         }
         if (empty($data['name'])) {
             throw new \InvalidArgumentException(
-                esc_html__('Card data must include name.', 'mtg4wp')
+                esc_html__('Card data must include name.', 'l4m4w')
             );
         }
     }

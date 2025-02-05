@@ -58,7 +58,7 @@ class ScryfallClient {
         $response = wp_remote_get($url, [
             'timeout' => 15,
             'headers' => [
-                'User-Agent' => 'mtg4wp/1.0.0',
+                'User-Agent' => 'MTG4WP/1.0.0',
             ],
         ]);
 
@@ -121,7 +121,7 @@ class ScryfallClient {
     private function log_error(string $endpoint, string $message): void {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log(sprintf(
-                'mtg4wp Scryfall API Error: %s - Endpoint: %s',
+                'l4m4w Scryfall API Error: %s - Endpoint: %s',
                 $message,
                 $endpoint
             ));

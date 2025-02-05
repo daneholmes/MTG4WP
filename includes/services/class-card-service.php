@@ -20,7 +20,7 @@ class CardService
             return $data ? new Card($data) : null;
         } catch (\Exception $e) {
             error_log(sprintf(
-                'mtg4wp ID lookup error: %s (id: %s)',
+                'l4m4w ID lookup error: %s (id: %s)',
                 $e->getMessage(),
                 $id
             ));
@@ -35,7 +35,7 @@ class CardService
             return $data ? new Card($data) : null;
         } catch (\Exception $e) {
             error_log(sprintf(
-                'mtg4wp lookup error: %s (name: %s, set: %s)',
+                'l4m4w lookup error: %s (name: %s, set: %s)',
                 $e->getMessage(),
                 $name,
                 $set ?? 'none'
@@ -51,7 +51,7 @@ class CardService
             return $data ? new Card($data) : null;
         } catch (\Exception $e) {
             error_log(sprintf(
-                'mtg4wp set/number lookup error: %s (set: %s, number: %s)',
+                'l4m4w set/number lookup error: %s (set: %s, number: %s)',
                 $e->getMessage(),
                 $set,
                 $number
@@ -209,7 +209,7 @@ class CardService
     ): void {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log(sprintf(
-                'mtg4wp Card Service Error [%s]: ID="%s" Name="%s" Set="%s" Message="%s"',
+                'l4m4w Card Service Error [%s]: ID="%s" Name="%s" Set="%s" Message="%s"',
                 $type,
                 $id,
                 $name,

@@ -68,7 +68,7 @@ const Edit = ({ attributes, setAttributes }) => {
             setAttributes({ deck: response });
         } catch (err) {
             setAttributes({ 
-                error: __('Error sorting deck.', 'MTG4WP'),
+                error: __('Error sorting deck.', 'l4m4w'),
             });
         }
     };
@@ -81,14 +81,14 @@ const Edit = ({ attributes, setAttributes }) => {
         <>
             <div {...blockProps}>
                 <InspectorControls>
-                    <PanelBody title={__('Deck Settings', 'MTG4WP')} initialOpen={true}>
+                    <PanelBody title={__('Deck Settings', 'l4m4w')} initialOpen={true}>
                         <PanelRow>
                             <Button
                                 variant="secondary"
                                 onClick={handleSortDeck}
                                 disabled={!deck.length}
                             >
-                                {__('Sort Deck', 'MTG4WP')}
+                                {__('Sort Deck', 'l4m4w')}
                             </Button>
                         </PanelRow>
                     </PanelBody>

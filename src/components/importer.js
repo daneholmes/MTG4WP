@@ -19,11 +19,11 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                 setAttributes({
                     error: (
                         <div className="mtg4wp-import-errors">
-                            <p>{__('Some cards could not be imported:', 'MTG4WP')}</p>
+                            <p>{__('Some cards could not be imported:', 'l4m4w')}</p>
                             <ul>
                                 {response.errors.map((error, index) => (
                                     <li key={index}>
-                                        {__('Line', 'MTG4WP')} {error.line}: {error.message}
+                                        {__('Line', 'l4m4w')} {error.line}: {error.message}
                                         <code>{error.content}</code>
                                     </li>
                                 ))}
@@ -51,14 +51,14 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
 
     return (
         <Modal
-            title={<Heading level={2}>{__('Import Deck', 'MTG4WP')}</Heading>}
+            title={<Heading level={2}>{__('Import Deck', 'l4m4w')}</Heading>}
             onRequestClose={onClose}
             className="mtg4wp-importer-modal"
         >
             <div className="mtg4wp-importer">
                 <TextareaControl
-                    label={__('Paste your deck list', 'MTG4WP')}
-                    help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'MTG4WP')}
+                    label={__('Paste your deck list', 'l4m4w')}
+                    help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'l4m4w')}
                     value={importText}
                     onChange={(newText) => setAttributes({ importText: newText })}
                     placeholder={placeholderText}
@@ -80,7 +80,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                         variant="secondary"
                         onClick={onClose}
                     >
-                        {__('Cancel', 'MTG4WP')}
+                        {__('Cancel', 'l4m4w')}
                     </Button>
                     <Button
                         variant="primary"
@@ -88,7 +88,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                         isBusy={importing}
                         disabled={importing || !importText.trim()}
                     >
-                        {__('Import', 'MTG4WP')}
+                        {__('Import', 'l4m4w')}
                     </Button>
                 </div>
             </div>
