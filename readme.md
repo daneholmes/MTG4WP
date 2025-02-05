@@ -1,30 +1,30 @@
-# MTG4WP - Magic: The Gathering WordPress Plugin
+# mtg4wp - Magic: The Gathering WordPress Plugin
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.1%2B-blue.svg)](https://wordpress.org/download/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-GPL--3.0-green.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.
+mtg4wp is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.
 
 ## Installation
 
 ### Method 1: WordPress Plugin Directory
 1. Navigate to Plugins > Add New in your WordPress dashboard
-2. Search for "MTG4WP"
+2. Search for "mtg4wp"
 3. Click "Install Now" and then "Activate"
 
 ### Method 2: Manual Upload
 1. Download the latest release
-2. Upload the plugin files to `/wp-content/plugins/MTG4WP`
+2. Upload the plugin files to `/wp-content/plugins/mtg4wp`
 3. Activate the plugin through the 'Plugins' screen in WordPress
 
 ### Method 3: Compilation
 ```zsh
 # Clone the repository
-git clone https://github.com/daneholmes/MTG4WP.git
+git clone https://github.com/daneholmes/mtg4wp.git
 
 # Navigate to the project directory
-cd MTG4WP
+cd mtg4wp
 
 # Install dependencies
 npm install
@@ -65,5 +65,5 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Contact
 
-For support, please [open an issue](https://github.com/daneholmes/MTG4WP/issues) on the GitHub repository.
+For support, please [open an issue](https://github.com/daneholmes/mtg4wp/issues) on the GitHub repository.
 
