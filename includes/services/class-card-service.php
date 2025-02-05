@@ -66,11 +66,7 @@ class CardService
         if (empty($cards)) {
             return [];
         }
-<<<<<<< HEAD
-
-=======
     
->>>>>>> main
         // Define section weights
         $section_weights = [
             'commander'  => 0,
@@ -79,11 +75,7 @@ class CardService
             'maybeboard'=> 3,
             'token'     => 4,
         ];
-<<<<<<< HEAD
-
-=======
     
->>>>>>> main
         // Define type weights
         $type_weights = [
             'creature'     => 0,
@@ -96,54 +88,21 @@ class CardService
             'land'         => 7,
             'other'        => 8,
         ];
-<<<<<<< HEAD
-
-        // Create a new array to preserve immutability
-        $sorted_cards = $cards;
-
-=======
     
         // Create a new array to preserve immutability
         $sorted_cards = $cards;
     
->>>>>>> main
         usort($sorted_cards, function ($a, $b) use ($section_weights, $type_weights) {
             // Compare sections
             $a_section = $section_weights[$a['section'] ?? 'mainboard'] ?? 999;
             $b_section = $section_weights[$b['section'] ?? 'mainboard'] ?? 999;
-<<<<<<< HEAD
-
-            if ($a_section !== $b_section) {
-                return $a_section - $b_section;
-            }
-
-            // Compare types
-            $a_type = $type_weights[$a['primary_type'] ?? 'other'] ?? 999;
-            $b_type = $type_weights[$b['primary_type'] ?? 'other'] ?? 999;
-
-            if ($a_type !== $b_type) {
-                return $a_type - $b_type;
-            }
-
-            // Compare CMC
-            $a_cmc = floatval($a['cmc'] ?? 0);
-            $b_cmc = floatval($b['cmc'] ?? 0);
-
-            if ($a_cmc !== $b_cmc) {
-                return $a_cmc - $b_cmc;
-            }
-
-            // Compare names
-            return strcmp($a['name'] ?? '', $b['name'] ?? '');
-        });
-
-=======
             
             if ($a_section !== $b_section) {
                 return $a_section - $b_section;
             }
     
-            // Compare types
+            // Compare types based on front face only
+            // primary_type is already determined by front face in Card class
             $a_type = $type_weights[$a['primary_type'] ?? 'other'] ?? 999;
             $b_type = $type_weights[$b['primary_type'] ?? 'other'] ?? 999;
             
@@ -159,11 +118,10 @@ class CardService
                 return $a_cmc - $b_cmc;
             }
     
-            // Compare names
+            // Compare names (of front face)
             return strcmp($a['name'] ?? '', $b['name'] ?? '');
         });
     
->>>>>>> main
         // Sanitize and validate the sorted data
         return array_map(function ($card) {
             return wp_parse_args($card, [
