@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import {
+    ExternalLink,
     TextControl,
     Button,
     Notice,
@@ -88,7 +89,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 value={searchTerm}
                 onChange={setSearchTerm}
                 placeholder={__("e.g. Sensei's Divining Top", 'l4m4w')}
-                help={__('Enter the name of the card you want to add', 'l4m4w')}
+                help={__('Enter a card name', 'l4m4w')}
             />
             
             <TextControl
@@ -96,7 +97,17 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 value={searchSet}
                 onChange={setSearchSet}
                 placeholder={__('e.g. chk', 'l4m4w')}
-                help={__('Enter the three-letter set code', 'l4m4w')}
+                help={
+                    <>
+                        {__('For a specific printing enter a set code.', 'l4m4w')}{' '}
+                        <ExternalLink
+                            href="#"
+                            rel="nofollow noreferrer"
+                        >
+                            {__('Learn more', 'l4m4w')}
+                        </ExternalLink>
+                    </>
+                }
             />
             
             <TextControl
@@ -104,7 +115,17 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 value={searchNumber}
                 onChange={setSearchNumber}
                 placeholder={__('e.g. 268', 'l4m4w')}
-                help={__('Enter the collector number', 'l4m4w')}
+                help={
+                    <>
+                        {__('Enter the card\'s collector number.', 'l4m4w')}{' '}
+                        <ExternalLink
+                            href="#"
+                            rel="nofollow noreferrer"
+                        >
+                            {__('Learn more', 'l4m4w')}
+                        </ExternalLink>
+                    </>
+                }
             />
             
             <Button 
