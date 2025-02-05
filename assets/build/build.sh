@@ -35,10 +35,10 @@ convert_readme() {
         echo "Stable tag: ${PLUGIN_VERSION}"
         echo "License: GPLv3"
         echo "License URI: https://www.gnu.org/licenses/gpl-3.0.html"
-        echo "Seamlessly display Magic: The Gathering© cards on your WordPress website."
+        echo "Seamlessly display Magic: The Gathering cards on your WordPress website."
         echo ""
         echo "== Description =="
-        echo 'MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering© cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.'
+        echo 'MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.'
 
         echo ""
         echo "== Installation =="

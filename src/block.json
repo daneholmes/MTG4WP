@@ -6,7 +6,7 @@
     "title": "Deck",
     "category": "widgets",
     "icon": "list-view",
-    "description": "Seamlessly display Magic: The Gathering© cards on your WordPress website.",
+    "description": "Seamlessly display Magic: The Gathering cards on your WordPress website.",
     "keywords": ["mtg", "magic", "cards", "deck"],
     "supports": {
         "html": false,

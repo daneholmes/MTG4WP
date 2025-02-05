@@ -1,7 +1,7 @@
 {
     "name": "MTG4WP",
     "version": "1.0.0",
-    "description": "Seamlessly display Magic: The Gathering© cards on your WordPress website.",
+    "description": "Seamlessly display Magic: The Gathering cards on your WordPress website.",
     "author": "Dane Holmes",
     "license": "GPL-3.0-only",
     "scripts": {
