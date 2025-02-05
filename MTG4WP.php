@@ -30,7 +30,6 @@ require_once MTG4WP_PLUGIN_DIR . 'includes/models/class-card.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-card-service.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-scryfall-client.php';
 require_once MTG4WP_PLUGIN_DIR . 'includes/api/class-rest-api.php';
-require_once MTG4WP_PLUGIN_DIR . 'includes/services/class-plugin-lifecycle.php';
 
 // Initialize the plugin
 function init()
