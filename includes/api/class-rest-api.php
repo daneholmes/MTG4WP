@@ -130,7 +130,7 @@ class RestAPI
 
             // Handle set/number lookup
             if ($set && $number) {
-                $card = $this->card_service->get_card_by_set_number($set, $number);
+                $card = $this->card_service->get_card_by_set_id($set, $number);
                 if (!$card) {
                     return new WP_Error(
                         'card_not_found',
