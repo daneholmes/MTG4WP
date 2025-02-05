@@ -1,9 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { Button, TextareaControl, Modal, Notice, __experimentalHeading as Heading } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
+import { useState, useEffect } from '@wordpress/element';
 
 const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => {
     const { importText = '', importing = false, error = '' } = attributes;
+    const [showDelayMessage, setShowDelayMessage] = useState(false);
 
     const handleImport = async () => {
         try {
@@ -42,6 +44,16 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
             setAttributes({ importing: false });
         }
     };
+
+    useEffect(() => {
+        let timeoutId;
+        if (importing) {
+            timeoutId = setTimeout(() => setShowDelayMessage(true), 2000);
+        } else {
+            setShowDelayMessage(false);
+        }
+        return () => clearTimeout(timeoutId);
+    }, [importing]);
 
     const placeholderText = `4 Lightning Bolt (sld) 901 *F* [mainboard]
 3 Murktide Regent
@@ -91,6 +103,15 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                         {__('Import', 'l4m4w')}
                     </Button>
                 </div>
+                {showDelayMessage && (
+                    <Notice
+                        status="info"
+                        isDismissible={false}
+                        className="mtg4wp-import-notice"
+                    >
+                        {__('Hold tight. Importing 10 cards per second.', 'l4m4w')}
+                    </Notice>
+                )}
             </div>
         </Modal>
     );
