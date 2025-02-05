@@ -193,6 +193,102 @@ $mtg4wp-transition: 0.2s ease;
     }
 }
 
+.mtg4wp-importer-modal {
+    max-width: 800px !important;
+    width: 90vw !important;
+    .components-modal__content {
+        padding: 0 !important;
+        margin-top: 56px;
+    }
+    .components-modal__header {
+        padding: $mtg4wp-card-padding;
+        padding-bottom: 0;
+        height: 56px;
+        
+        .components-modal__header-heading {
+            font-size: 16px;
+        }
+    }
+    .mtg4wp-importer {
+        padding: $mtg4wp-card-padding;
+        padding-top: 0;
+    }
+    .mtg4wp-importer {
+        display: flex;
+        flex-direction: column;
+        gap: $grid-unit-20;
+        .components-textarea-control__input {
+            @include mtg4wp-input;
+            height: auto;
+            min-height: 300px;
+            padding: $grid-unit-15;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre;
+        }
+    }
+    .mtg4wp-importer-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $grid-unit-15;
+        margin-top: $grid-unit-15;
+        .components-button {
+            height: 36px;
+            min-width: 100px;
+            justify-content: center;
+        }
+    }
+}
+
+.mtg4wp-importer-modal {
+    max-width: 800px !important;
+    width: 90vw !important;
+    .components-modal__content {
+        padding: 0 !important;
+        margin-top: 56px;
+    }
+    .components-modal__header {
+        padding: $mtg4wp-card-padding;
+        padding-bottom: 0;
+        height: 56px;
+        
+        .components-modal__header-heading {
+            font-size: 16px;
+        }
+    }
+    .mtg4wp-importer {
+        padding: $mtg4wp-card-padding;
+        padding-top: 0;
+    }
+    .mtg4wp-importer {
+        display: flex;
+        flex-direction: column;
+        gap: $grid-unit-20;
+        .components-textarea-control__input {
+            @include mtg4wp-input;
+            height: auto;
+            min-height: 300px;
+            padding: $grid-unit-15;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre;
+        }
+    }
+    .mtg4wp-importer-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $grid-unit-15;
+        margin-top: $grid-unit-15;
+        .components-button {
+            height: 36px;
+            min-width: 100px;
+            justify-content: center;
+        }
+    }
+}
+
 // Notices
 .mtg4wp-notice {
     margin: $grid-unit-20 0;
