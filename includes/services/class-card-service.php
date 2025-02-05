@@ -1,71 +1,66 @@
 <?php
 
-namespace MTG4WP\Services;
+namespace mtg4wp\Services;
 
-use MTG4WP\Models\Card;
+use mtg4wp\Models\Card;
 
 class CardService
 {
-    private $scryfall_client;
-    private $cache_service;
+    private ScryfallClient $scryfall_client;
 
-    public function __construct(ScryfallClient $scryfall_client, CacheService $cache_service)
+    public function __construct(ScryfallClient $scryfall_client)
     {
         $this->scryfall_client = $scryfall_client;
-        $this->cache_service = $cache_service;
     }
 
-    /**
-     * Get a card by name and optional set/number.
-     * 
-     * Search priorities:
-     * 1. If set AND number: Direct cache/API lookup
-     * 2. If set AND name: Scryfall set-specific fuzzy search
-     * 3. If only name: Scryfall fuzzy search for canonical version
-     * 
-     * @param string $name Card name (optional if set and number provided)
-     * @param string|null $set Set code
-     * @param string|null $number Collector number
-     * @return Card|null
-     */
-    public function get_card(string $name = '', ?string $set = null, ?string $number = null): ?Card
-    {
+    // Get a card by Scryfall ID
+    public function get_card_by_id(string $id): ?Card {
         try {
-            // Normalize inputs
-            $name = trim($name);
-            $set = $set ? strtolower(trim($set)) : null;
-            $number = $number ? trim($number) : null;
-
-            $this->log_search_attempt($name, $set, $number);
-
-            // Case 1: We have set and number - most efficient path
-            if ($set && $number) {
-                return $this->get_card_by_set_number($set, $number);
-            }
-
-            // Case 2: We have set and name
-            if ($set && $name) {
-                return $this->get_card_by_set_name($name, $set);
-            }
-
-            // Case 3: We only have name
-            if ($name) {
-                return $this->get_card_by_name($name);
-            }
-
-            return null;
+            $data = $this->scryfall_client->get_card($id);
+            return $data ? new Card($data) : null;
         } catch (\Exception $e) {
-            $this->log_error($name, $set, $number, $e->getMessage());
+            error_log(sprintf(
+                'mtg4wp ID lookup error: %s (id: %s)',
+                $e->getMessage(),
+                $id
+            ));
             return null;
         }
     }
 
-    /**
-     * Sort a deck of cards
-     *
-     * @param array $cards Array of card data to sort
-     * @return array Sorted cards
-     */
+    // Look up a card by name and optional set
+    public function get_card_by_name(string $name, ?string $set = null): ?Card {
+        try {
+            $data = $this->scryfall_client->get_card_by_name($name, $set);
+            return $data ? new Card($data) : null;
+        } catch (\Exception $e) {
+            error_log(sprintf(
+                'mtg4wp lookup error: %s (name: %s, set: %s)',
+                $e->getMessage(),
+                $name,
+                $set ?? 'none'
+            ));
+            return null;
+        }
+    }
+
+    // Lookup a card by set code and collector number
+    public function get_card_by_set_number(string $set, string $number): ?Card {
+        try {
+            $data = $this->scryfall_client->resolve_card_id($set, $number);
+            return $data ? new Card($data) : null;
+        } catch (\Exception $e) {
+            error_log(sprintf(
+                'mtg4wp set/number lookup error: %s (set: %s, number: %s)',
+                $e->getMessage(),
+                $set,
+                $number
+            ));
+            return null;
+        }
+    }
+
+    // Sort a deck of cards
     public function sort_deck(array $cards): array
     {
         if (empty($cards)) {
@@ -122,7 +117,7 @@ class CardService
             }
         );
 
-        // Convert back to block format while preserving all card data
+        // Convert back to block format
         return array_map(
             function (Card $card) {
                 return $card->to_block_format();
@@ -131,12 +126,7 @@ class CardService
         );
     }
 
-    /**
-     * Import a deck list
-     *
-     * @param string $deck_list Raw deck list text
-     * @return array Array containing cards and errors
-     */
+    // Import a deck list
     public function import_deck(string $deck_list): array
     {
         $lines = array_filter(explode("\n", $deck_list));
@@ -146,16 +136,30 @@ class CardService
         foreach ($lines as $index => $line) {
             try {
                 $card_data = $this->parse_deck_list_line($line);
-                $card = $this->get_card(
+                
+                // First try to get the card by set/number
+                $scryfall_data = $this->scryfall_client->resolve_card_id(
                     $card_data['name'],
                     $card_data['set'],
                     $card_data['number']
                 );
 
-                if (!$card) {
+                if (!$scryfall_data) {
+                    // Fallback to name lookup
+                    $scryfall_data = $this->scryfall_client->get_card_by_name(
+                        $card_data['name'],
+                        $card_data['set']
+                    );
+                }
+
+                if (!$scryfall_data) {
                     throw new \Exception('Card not found');
                 }
 
+                // Cache the result
+                $this->cache_service->store_card($scryfall_data);
+
+                $card = new Card($scryfall_data);
                 $card->set_quantity($card_data['quantity']);
                 $card->set_section($card_data['section']);
                 $card->set_foil($card_data['foil']);
@@ -176,127 +180,7 @@ class CardService
         ];
     }
 
-    /**
-     * Get card by set and collector number (most efficient)
-     *
-     * @param string $set Set code
-     * @param string $number Collector number
-     * @return Card|null
-     */
-    private function get_card_by_set_number(string $set, string $number): ?Card
-    {
-        // Check cache first
-        $cached_data = $this->cache_service->get_card(null, $set, $number);
-        if ($cached_data) {
-            $this->log_cache_result('direct', $set, $number, true);
-            return new Card($cached_data);
-        }
-
-        $this->log_cache_result('direct', $set, $number, false);
-
-        // Fetch from Scryfall
-        $scryfall_data = $this->scryfall_client->fetch_card('', $set, $number);
-        if (!$scryfall_data) {
-            return null;
-        }
-
-        // Cache the result
-        $this->cache_service->store_card($scryfall_data);
-        return new Card($scryfall_data);
-    }
-
-    /**
-     * Get card by name and set
-     *
-     * @param string $name Card name
-     * @param string $set Set code
-     * @return Card|null
-     */
-    private function get_card_by_set_name(string $name, string $set): ?Card
-    {
-        // Fetch from Scryfall with set-specific search
-        $scryfall_data = $this->scryfall_client->fetch_card($name, $set);
-        if (!$scryfall_data) {
-            return null;
-        }
-
-        // Check if this resolved card is in cache
-        $cached_data = $this->cache_service->get_card(
-            null,
-            $scryfall_data['set'],
-            $scryfall_data['collector_number']
-        );
-
-        // Log what we got back from Scryfall
-        $this->log_scryfall_resolution(
-            'set_name',
-            $name,
-            $set,
-            $scryfall_data['set'],
-            $scryfall_data['collector_number']
-        );
-
-        if ($cached_data) {
-            $this->log_cache_result('resolved', $scryfall_data['set'], $scryfall_data['collector_number'], true);
-            return new Card($cached_data);
-        }
-
-        $this->log_cache_result('resolved', $scryfall_data['set'], $scryfall_data['collector_number'], false);
-
-        // Cache the result using set/number
-        $this->cache_service->store_card($scryfall_data);
-        return new Card($scryfall_data);
-    }
-
-    /**
-     * Get card by name only
-     *
-     * @param string $name Card name
-     * @return Card|null
-     */
-    private function get_card_by_name(string $name): ?Card
-    {
-        // Fetch from Scryfall
-        $scryfall_data = $this->scryfall_client->fetch_card($name);
-        if (!$scryfall_data) {
-            return null;
-        }
-
-        // Check if this resolved card is in cache
-        $cached_data = $this->cache_service->get_card(
-            null,
-            $scryfall_data['set'],
-            $scryfall_data['collector_number']
-        );
-
-        // Log what we got back from Scryfall
-        $this->log_scryfall_resolution(
-            'name_only',
-            $name,
-            null,
-            $scryfall_data['set'],
-            $scryfall_data['collector_number']
-        );
-
-        if ($cached_data) {
-            $this->log_cache_result('resolved', $scryfall_data['set'], $scryfall_data['collector_number'], true);
-            return new Card($cached_data);
-        }
-
-        $this->log_cache_result('resolved', $scryfall_data['set'], $scryfall_data['collector_number'], false);
-
-        // Cache the result using returned set/number
-        $this->cache_service->store_card($scryfall_data);
-        return new Card($scryfall_data);
-    }
-
-    /**
-     * Parse a single line from a deck list
-     *
-     * @param string $line Raw deck list line
-     * @return array Parsed card data
-     * @throws \Exception If line format is invalid
-     */
+    //Parse a single line from a deck list
     private function parse_deck_list_line(string $line): array
     {
         $line = trim($line);
@@ -315,92 +199,21 @@ class CardService
         ];
     }
 
-    /**
-     * Log the initial search attempt
-     *
-     * @param string $name Card name
-     * @param string|null $set Set code
-     * @param string|null $number Collector number
-     */
-    private function log_search_attempt(string $name, ?string $set, ?string $number): void
-    {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            $search_type = $set && $number ? 'SET_NUMBER' : ($set && $name ? 'SET_NAME' : 'NAME_ONLY');
-            error_log(sprintf(
-                'MTG4WP Search Attempt [%s]: name="%s" set="%s" number="%s"',
-                $search_type,
-                $name,
-                $set ?? 'null',
-                $number ?? 'null'
-            ));
-        }
-    }
-
-    /**
-     * Log cache hit/miss for direct lookups
-     *
-     * @param string $lookup_type Type of lookup performed
-     * @param string $set Set code
-     * @param string $number Collector number
-     * @param bool $hit Whether cache was hit
-     */
-    private function log_cache_result(string $lookup_type, string $set, string $number, bool $hit): void
-    {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log(sprintf(
-                'MTG4WP Cache %s [%s]: %s-%s',
-                $hit ? 'HIT' : 'MISS',
-                $lookup_type,
-                $set,
-                $number
-            ));
-        }
-    }
-
-    /**
-     * Log what Scryfall resolved a search to
-     *
-     * @param string $search_type Type of search performed
-     * @param string $search_term Search term used
-     * @param string|null $search_set Set code used in search
-     * @param string $resolved_set Resolved set code
-     * @param string $resolved_number Resolved collector number
-     */
-    private function log_scryfall_resolution(
-        string $search_type,
-        string $search_term,
-        ?string $search_set,
-        string $resolved_set,
-        string $resolved_number
+    // Log errors with context
+    private function log_error(
+        string $type,
+        string $id = '',
+        string $name = '',
+        string $set = '',
+        string $message = ''
     ): void {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log(sprintf(
-                'MTG4WP Scryfall Resolution [%s]: "%s" (%s) -> %s-%s',
-                $search_type,
-                $search_term,
-                $search_set ?? 'no set',
-                $resolved_set,
-                $resolved_number
-            ));
-        }
-    }
-
-    /**
-     * Log errors
-     *
-     * @param string $name Card name
-     * @param string|null $set Set code
-     * @param string|null $number Collector number
-     * @param string $message Error message
-     */
-    private function log_error(string $name, ?string $set, ?string $number, string $message): void
-    {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log(sprintf(
-                'MTG4WP Error: name="%s" set="%s" number="%s" error="%s"',
+                'mtg4wp Card Service Error [%s]: ID="%s" Name="%s" Set="%s" Message="%s"',
+                $type,
+                $id,
                 $name,
-                $set ?? 'null',
-                $number ?? 'null',
+                $set,
                 $message
             ));
         }
