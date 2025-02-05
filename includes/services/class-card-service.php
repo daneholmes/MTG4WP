@@ -66,64 +66,78 @@ class CardService
         if (empty($cards)) {
             return [];
         }
-
-        // Convert from raw data to Card objects if needed
-        $card_objects = array_map(
-            function ($card_data) {
-                if ($card_data instanceof Card) {
-                    return $card_data;
-                }
-
-                // Create new Card object preserving the current state
-                $card = new Card($card_data);
-                if (isset($card_data['quantity'])) {
-                    $card->set_quantity($card_data['quantity']);
-                }
-                if (isset($card_data['section'])) {
-                    $card->set_section($card_data['section']);
-                }
-                if (isset($card_data['foil'])) {
-                    $card->set_foil($card_data['foil']);
-                }
-                return $card;
-            },
-            $cards
-        );
-
-        // Sort cards based on multiple criteria
-        usort(
-            $card_objects,
-            function (Card $a, Card $b) {
-                $a_weight = $a->get_sort_weight();
-                $b_weight = $b->get_sort_weight();
-
-                // Compare section weights
-                if ($a_weight['section_weight'] !== $b_weight['section_weight']) {
-                    return $a_weight['section_weight'] - $b_weight['section_weight'];
-                }
-
-                // Compare type weights
-                if ($a_weight['type_weight'] !== $b_weight['type_weight']) {
-                    return $a_weight['type_weight'] - $b_weight['type_weight'];
-                }
-
-                // Compare CMC
-                if ($a_weight['cmc'] !== $b_weight['cmc']) {
-                    return $a_weight['cmc'] - $b_weight['cmc'];
-                }
-
-                // Compare names
-                return strcmp($a_weight['name'], $b_weight['name']);
+    
+        // Define section weights
+        $section_weights = [
+            'commander'  => 0,
+            'mainboard' => 1,
+            'sideboard' => 2,
+            'maybeboard'=> 3,
+            'token'     => 4,
+        ];
+    
+        // Define type weights
+        $type_weights = [
+            'creature'     => 0,
+            'planeswalker' => 1,
+            'battle'       => 2,
+            'artifact'     => 3,
+            'enchantment'  => 4,
+            'instant'      => 5,
+            'sorcery'      => 6,
+            'land'         => 7,
+            'other'        => 8,
+        ];
+    
+        // Create a new array to preserve immutability
+        $sorted_cards = $cards;
+    
+        usort($sorted_cards, function ($a, $b) use ($section_weights, $type_weights) {
+            // Compare sections
+            $a_section = $section_weights[$a['section'] ?? 'mainboard'] ?? 999;
+            $b_section = $section_weights[$b['section'] ?? 'mainboard'] ?? 999;
+            
+            if ($a_section !== $b_section) {
+                return $a_section - $b_section;
             }
-        );
-
-        // Convert back to block format
-        return array_map(
-            function (Card $card) {
-                return $card->to_block_format();
-            },
-            $card_objects
-        );
+    
+            // Compare types
+            $a_type = $type_weights[$a['primary_type'] ?? 'other'] ?? 999;
+            $b_type = $type_weights[$b['primary_type'] ?? 'other'] ?? 999;
+            
+            if ($a_type !== $b_type) {
+                return $a_type - $b_type;
+            }
+    
+            // Compare CMC
+            $a_cmc = floatval($a['cmc'] ?? 0);
+            $b_cmc = floatval($b['cmc'] ?? 0);
+            
+            if ($a_cmc !== $b_cmc) {
+                return $a_cmc - $b_cmc;
+            }
+    
+            // Compare names
+            return strcmp($a['name'] ?? '', $b['name'] ?? '');
+        });
+    
+        // Sanitize and validate the sorted data
+        return array_map(function ($card) {
+            return wp_parse_args($card, [
+                'id' => '',
+                'name' => '',
+                'type_line' => '',
+                'primary_type' => 'other',
+                'cmc' => 0,
+                'faces' => [],
+                'layout' => 'normal',
+                'isDoubleFaced' => false,
+                'quantity' => 1,
+                'foil' => false,
+                'section' => 'mainboard',
+                'currentFace' => 0,
+            ]);
+        }, $sorted_cards);
     }
 
     // Import a deck list
