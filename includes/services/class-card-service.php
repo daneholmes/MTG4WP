@@ -45,9 +45,9 @@ class CardService
     }
 
     // Lookup a card by set code and collector number
-    public function get_card_by_set_number(string $set, string $number): ?Card {
+    public function get_card_by_set_id(string $set, string $number): ?Card {
         try {
-            $data = $this->scryfall_client->resolve_card_id($set, $number);
+            $data = $this->scryfall_client->get_card_by_set_id($set, $number);
             return $data ? new Card($data) : null;
         } catch (\Exception $e) {
             error_log(sprintf(
@@ -136,9 +136,9 @@ class CardService
         foreach ($lines as $index => $line) {
             try {
                 $card_data = $this->parse_deck_list_line($line);
-                
+
                 // First try to get the card by set/number
-                $scryfall_data = $this->scryfall_client->resolve_card_id(
+                $scryfall_data = $this->scryfall_client->get_card_by_set_id(
                     $card_data['name'],
                     $card_data['set'],
                     $card_data['number']

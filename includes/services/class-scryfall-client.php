@@ -44,6 +44,32 @@ class ScryfallClient {
         return $data;
     }
 
+    public function get_card_by_set_id(string $set, string $number): ?array {
+        // First check cache using a composite key
+        $cache_key = "set_{$set}_{$number}";
+        $cached = wp_cache_get($cache_key, self::CACHE_GROUP);
+        if (false !== $cached) {
+            return $cached;
+        }
+
+        // Sanitize inputs
+        $set = sanitize_text_field($set);
+        $number = sanitize_text_field($number);
+
+        // Build the Scryfall API endpoint for card lookup by set/number
+        $endpoint = "/cards/{$set}/{$number}";
+
+        // Fetch from API
+        $data = $this->fetch_from_api($endpoint);
+        if ($data) {
+            // Cache both by ID and by set/number combination
+            wp_cache_set($data['id'], $data, self::CACHE_GROUP, self::CACHE_TTL);
+            wp_cache_set($cache_key, $data, self::CACHE_GROUP, self::CACHE_TTL);
+        }
+
+        return $data;
+    }
+
     // Makes an API request with rate limiting
     private function fetch_from_api(string $endpoint, array $params = []): ?array {
         if (!$this->check_rate_limit()) {
