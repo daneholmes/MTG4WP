@@ -2,27 +2,27 @@
 
 namespace mtg4wp\API;
 
+use Exception;
 use mtg4wp\Services\CardService;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
-use WP_Error;
 use WP_REST_Server;
 
 // REST API handler for MTG4WP
-class RestAPI
-{
-    private const API_NAMESPACE = 'mtg4wp/v1';
+class RestAPI {
+
+    private const API_NAMESPACE='mtg4wp/v1';
+
     private $card_service;
 
-    public function __construct(CardService $card_service)
-    {
-        $this->card_service = $card_service;
-        add_action('rest_api_init', [$this, 'register_routes']);
+    public function __construct( CardService $card_service ) {
+        $this->card_service=$card_service;
+        add_action( 'rest_api_init', [$this, 'register_routes'] );
     }
 
     // Register REST API routes
-    public function register_routes(): void
-    {
+    public function register_routes(): void {
         // General card search endpoint - handles name, set/number, or both
         register_rest_route(
             self::API_NAMESPACE,
@@ -32,27 +32,27 @@ class RestAPI
                     'methods'             => WP_REST_Server::READABLE,
                     'callback'            => [$this, 'search_card'],
                     'permission_callback' => [$this, 'check_permissions'],
-                    'args'               => [
+                    'args'                => [
                         'name'   => [
                             'required'          => false,
-                            'type'             => 'string',
+                            'type'              => 'string',
                             'sanitize_callback' => 'sanitize_text_field',
-                            'description'       => __('Card name to search for.', 'l4m4w'),
+                            'description'       => __( 'Card name to search for.', 'l4m4w' ),
                         ],
                         'set'    => [
                             'required'          => false,
-                            'type'             => 'string',
+                            'type'              => 'string',
                             'sanitize_callback' => 'sanitize_text_field',
-                            'validate_callback' => function ($param) {
-                                return empty($param) || preg_match('/^[a-zA-Z0-9]{3,}$/', $param);
+                            'validate_callback' => function ( $param ) {
+                                return empty( $param ) || preg_match( '/^[a-zA-Z0-9]{3,}$/', $param );
                             },
-                            'description'       => __('Set code.', 'l4m4w'),
+                            'description'       => __( 'Set code.', 'l4m4w' ),
                         ],
                         'number' => [
                             'required'          => false,
-                            'type'             => 'string',
+                            'type'              => 'string',
                             'sanitize_callback' => 'sanitize_text_field',
-                            'description'       => __('Collector number.', 'l4m4w'),
+                            'description'       => __( 'Collector number.', 'l4m4w' ),
                         ],
                     ],
                 ],
@@ -68,14 +68,14 @@ class RestAPI
                     'methods'             => WP_REST_Server::READABLE,
                     'callback'            => [$this, 'get_card_by_id'],
                     'permission_callback' => [$this, 'check_permissions'],
-                    'args'               => [
+                    'args'                => [
                         'id' => [
                             'required'          => true,
-                            'type'             => 'string',
-                            'validate_callback' => function ($param) {
-                                return preg_match('/^[a-f0-9-]+$/', $param);
+                            'type'              => 'string',
+                            'validate_callback' => function ( $param ) {
+                                return preg_match( '/^[a-f0-9-]+$/', $param );
                             },
-                            'description'       => __('Scryfall ID of the card.', 'l4m4w'),
+                            'description'       => __( 'Scryfall ID of the card.', 'l4m4w' ),
                         ],
                     ],
                 ],
@@ -90,11 +90,11 @@ class RestAPI
                 'methods'             => WP_REST_Server::CREATABLE,
                 'callback'            => [$this, 'sort_deck'],
                 'permission_callback' => [$this, 'check_permissions'],
-                'args'               => [
+                'args'                => [
                     'cards' => [
                         'required'          => true,
-                        'type'             => 'array',
-                        'description'       => __('Array of card objects to sort.', 'l4m4w'),
+                        'type'              => 'array',
+                        'description'       => __( 'Array of card objects to sort.', 'l4m4w' ),
                     ],
                 ],
             ]
@@ -108,12 +108,12 @@ class RestAPI
                 'methods'             => WP_REST_Server::CREATABLE,
                 'callback'            => [$this, 'import_deck'],
                 'permission_callback' => [$this, 'check_permissions'],
-                'args'               => [
+                'args'                => [
                     'deck_list' => [
                         'required'          => true,
-                        'type'             => 'string',
+                        'type'              => 'string',
                         'sanitize_callback' => 'sanitize_textarea_field',
-                        'description'       => __('Raw deck list text to import.', 'l4m4w'),
+                        'description'       => __( 'Raw deck list text to import.', 'l4m4w' ),
                     ],
                 ],
             ]
@@ -121,45 +121,48 @@ class RestAPI
     }
 
     // Handle card search requests
-    public function search_card(WP_REST_Request $request): WP_REST_Response|WP_Error
-    {
+    public function search_card( WP_REST_Request $request ): WP_REST_Response|WP_Error {
         try {
-            $name = $request->get_param('name');
-            $set = $request->get_param('set');
-            $number = $request->get_param('number');
+            $name=$request->get_param( 'name' );
+            $set=$request->get_param( 'set' );
+            $number=$request->get_param( 'number' );
 
             // Handle set/number lookup
-            if ($set && $number) {
-                $card = $this->card_service->get_card_by_set_id($set, $number);
-                if (!$card) {
+            if ( $set && $number ) {
+                $card=$this->card_service->get_card_by_set_id( $set, $number );
+
+                if ( !$card ) {
                     return new WP_Error(
                         'card_not_found',
-                        __('No card found with the provided set and collector number.', 'l4m4w'),
+                        __( 'No card found with the provided set and collector number.', 'l4m4w' ),
                         ['status' => 404]
                     );
                 }
-                return new WP_REST_Response($card->to_block_format(), 200);
+
+                return new WP_REST_Response( $card->to_block_format(), 200 );
             }
 
             // Handle name-based lookup
-            if ($name) {
-                $card = $this->card_service->get_card_by_name($name, $set);
-                if (!$card) {
+            if ( $name ) {
+                $card=$this->card_service->get_card_by_name( $name, $set );
+
+                if ( !$card ) {
                     return new WP_Error(
                         'card_not_found',
-                        __('No card found matching the search criteria.', 'l4m4w'),
+                        __( 'No card found matching the search criteria.', 'l4m4w' ),
                         ['status' => 404]
                     );
                 }
-                return new WP_REST_Response($card->to_block_format(), 200);
+
+                return new WP_REST_Response( $card->to_block_format(), 200 );
             }
 
             return new WP_Error(
                 'invalid_parameters',
-                __('Must provide either card name or set and collector number.', 'l4m4w'),
+                __( 'Must provide either card name or set and collector number.', 'l4m4w' ),
                 ['status' => 400]
             );
-        } catch (\Exception $e) {
+        } catch ( Exception $e ) {
             return new WP_Error(
                 'server_error',
                 $e->getMessage(),
@@ -169,21 +172,21 @@ class RestAPI
     }
 
     // Handle card lookup by ID
-    public function get_card_by_id(WP_REST_Request $request): WP_REST_Response|WP_Error {
+    public function get_card_by_id( WP_REST_Request $request ): WP_REST_Response|WP_Error {
         try {
-            $id = $request->get_param('id');
-            $card = $this->card_service->get_card_by_id($id);
+            $id=$request->get_param( 'id' );
+            $card=$this->card_service->get_card_by_id( $id );
 
-            if (!$card) {
+            if ( !$card ) {
                 return new WP_Error(
                     'card_not_found',
-                    __('No card found with the provided ID.', 'l4m4w'),
+                    __( 'No card found with the provided ID.', 'l4m4w' ),
                     ['status' => 404]
                 );
             }
 
-            return new WP_REST_Response($card->to_block_format(), 200);
-        } catch (\Exception $e) {
+            return new WP_REST_Response( $card->to_block_format(), 200 );
+        } catch ( Exception $e ) {
             return new WP_Error(
                 'server_error',
                 $e->getMessage(),
@@ -193,20 +196,22 @@ class RestAPI
     }
 
     // Handle deck sorting requests
-    public function sort_deck(WP_REST_Request $request): WP_REST_Response|WP_Error {
+    public function sort_deck( WP_REST_Request $request ): WP_REST_Response|WP_Error {
         try {
-            $cards = $request->get_param('cards');
-            if (empty($cards)) {
+            $cards=$request->get_param( 'cards' );
+
+            if ( empty( $cards ) ) {
                 return new WP_Error(
                     'invalid_parameters',
-                    __('No cards provided to sort.', 'l4m4w'),
+                    __( 'No cards provided to sort.', 'l4m4w' ),
                     ['status' => 400]
                 );
             }
 
-            $sorted_cards = $this->card_service->sort_deck($cards);
-            return new WP_REST_Response($sorted_cards, 200);
-        } catch (\Exception $e) {
+            $sorted_cards=$this->card_service->sort_deck( $cards );
+
+            return new WP_REST_Response( $sorted_cards, 200 );
+        } catch ( Exception $e ) {
             return new WP_Error(
                 'server_error',
                 $e->getMessage(),
@@ -216,15 +221,15 @@ class RestAPI
     }
 
     // Handle deck import requests
-    public function import_deck(WP_REST_Request $request): WP_REST_Response|WP_Error {
+    public function import_deck( WP_REST_Request $request ): WP_REST_Response|WP_Error {
         try {
-            $deck_list = $request->get_param('deck_list');
-            $result = $this->card_service->import_deck($deck_list);
+            $deck_list=$request->get_param( 'deck_list' );
+            $result=$this->card_service->import_deck( $deck_list );
 
-            if (empty($result['cards']) && !empty($result['errors'])) {
+            if ( empty( $result['cards'] ) && !empty( $result['errors'] ) ) {
                 return new WP_Error(
                     'import_failed',
-                    __('Failed to import deck list.', 'l4m4w'),
+                    __( 'Failed to import deck list.', 'l4m4w' ),
                     [
                         'status' => 400,
                         'errors' => $result['errors'],
@@ -235,7 +240,7 @@ class RestAPI
             return new WP_REST_Response(
                 [
                     'cards'  => array_map(
-                        function ($card) {
+                        function ( $card ) {
                             return $card->to_block_format();
                         },
                         $result['cards']
@@ -244,7 +249,7 @@ class RestAPI
                 ],
                 200
             );
-        } catch (\Exception $e) {
+        } catch ( Exception $e ) {
             return new WP_Error(
                 'server_error',
                 $e->getMessage(),
@@ -254,8 +259,7 @@ class RestAPI
     }
 
     // Check permissions for API requests
-    public function check_permissions(): bool
-    {
-        return current_user_can('edit_posts');
+    public function check_permissions(): bool {
+        return current_user_can( 'edit_posts' );
     }
 }

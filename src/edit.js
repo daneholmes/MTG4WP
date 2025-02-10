@@ -8,7 +8,7 @@ import CardSearch from './components/card-search';
 import DeckImporter from './components/importer';
 
 const Edit = ({ attributes, setAttributes }) => {
-    const { deck = [], error = '', showImporter = false, imageLoading = {} } = attributes;
+    const { deck = [], error = '', show_importer = false, imageLoading = {} } = attributes;
     
     // Get block props with proper className
     const blockProps = useBlockProps({
@@ -45,7 +45,7 @@ const Edit = ({ attributes, setAttributes }) => {
 
     const handleFlipCard = (index) => {
         const newDeck = deck.map((card, i) =>
-            i === index ? { ...card, currentFace: card.currentFace === 0 ? 1 : 0 } : card
+            i === index ? { ...card, current_face: card.current_face === 0 ? 1 : 0 } : card
         );
         setAttributes({ 
             deck: newDeck,
@@ -74,7 +74,7 @@ const Edit = ({ attributes, setAttributes }) => {
     };
 
     const toggleImporter = (show) => {
-        setAttributes({ showImporter: show });
+        setAttributes({ show_importer: show });
     };
 
     return (
@@ -118,14 +118,14 @@ const Edit = ({ attributes, setAttributes }) => {
                     />
                 </div>
 
-                {showImporter && (
+                {show_importer && (
                     <DeckImporter
                         attributes={attributes}
                         setAttributes={setAttributes}
                         onImport={(importedCards) => {
                             setAttributes({ 
                                 deck: [...deck, ...importedCards],
-                                showImporter: false
+                                show_importer: false
                             });
                         }}
                         onClose={() => toggleImporter(false)}

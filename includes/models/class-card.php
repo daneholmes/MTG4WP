@@ -2,223 +2,277 @@
 
 namespace mtg4wp\Models;
 
-class Card
-{
+use InvalidArgumentException;
+
+class Card {
+
     private string $id;
+
     private string $name;
+
     private string $type_line;
+
     private string $primary_type;
+
     private float $cmc;
+
     private array $faces;
+
     private string $layout;
-    private bool $is_double_faced;
-    private int $quantity;
-    private bool $foil;
-    private string $section;
+
     private int $current_face;
-    private const SECTIONS = [
+
+    private int $quantity;
+
+    private bool $foil;
+
+    private string $section;
+    private const SECTIONS=[
         'commander',
         'mainboard',
         'sideboard',
         'maybeboard',
         'token',
     ];
+    private const LAYOUT_TYPES=[
+        'normal' => [
+            'transform_type'   => 'none',
+            'display_type'     => 'single',
+            'button_text'      => '',
+            'button_icon'      => '',
+            'rotate_direction' => '',
+        ],
+        'transform' => [
+            'transform_type'   => 'turn-over',
+            'display_type'     => 'double_faced',
+            'button_text'      => 'Transform',
+            'button_icon'      => 'flip-horizontal',
+            'rotate_direction' => '',
+        ],
+        'modal_dfc' => [
+            'transform_type'   => 'turn-over',
+            'display_type'     => 'double_faced',
+            'button_text'      => 'Transform',
+            'button_icon'      => 'flip-horizontal',
+            'rotate_direction' => '',
+        ],
+        'split' => [
+            'transform_type'   => 'rotate',
+            'display_type'     => 'single',
+            'button_text'      => 'Rotate',
+            'button_icon'      => 'rotate-right',
+            'rotate_direction' => 'rotate-right',
+        ],
+        'flip' => [
+            'transform_type'   => 'flip',
+            'display_type'     => 'single',
+            'button_text'      => 'Flip',
+            'button_icon'      => 'flip-vertical',
+            'rotate_direction' => '',
+        ],
+        'adventure' => [
+            'transform_type'   => 'none',
+            'display_type'     => 'single',
+            'button_text'      => '',
+            'button_icon'      => '',
+            'rotate_direction' => '',
+        ],
+        'battle' => [
+            'transform_type'   => 'turn-over',
+            'display_type'     => 'double_faced',
+            'button_text'      => 'Transform',
+            'button_icon'      => 'flip-horizontal',
+            'rotate_direction' => '',
+        ],
+    ];
 
-    // Constructor
-    public function __construct(array $data)
-    {
-        $this->validate_data($data);
+    public function __construct( array $data ) {
+        $this->validate_data( $data );
+        $this->card_data=$data;
+        $this->id=sanitize_text_field( $data['id'] );
+        $this->name=sanitize_text_field( $data['name'] );
+        $this->type_line=sanitize_text_field( $data['type_line'] ?? '' );
+        $this->cmc=(float) ( $data['cmc'] ?? 0.0 );
+        $this->layout=sanitize_text_field( $data['layout'] ?? 'normal' );
+        $this->faces=$this->process_faces( $data );
+        $this->current_face=0;
+        $this->quantity=1;
+        $this->foil=false;
+        $this->section='mainboard';
 
-        // Core card properties that other methods depend on
-        $this->id = sanitize_text_field($data['id']);
-        $this->name = sanitize_text_field($data['name']);
-        $this->type_line = sanitize_text_field($data['type_line'] ?? '');
-        $this->cmc = (float) ($data['cmc'] ?? 0.0);
-        $this->layout = sanitize_text_field($data['layout'] ?? 'normal');
-
-        // Process faces data before determining types
-        $this->faces = $this->process_faces($data);
-        $this->is_double_faced = $this->determine_if_double_faced();
-
-        // Determine the primary type after faces are set
-        $this->primary_type = $this->determine_primary_type();
-
-        // Deck-specific properties
-        $this->quantity = 1;
-        $this->foil = false;
-        $this->section = 'mainboard';
-        $this->current_face = 0;
+        // Set primary type after faces are processed
+        $this->primary_type=$this->determine_primary_type();
     }
 
-    // Validates required card data
-    private function validate_data(array $data): void
-    {
-        if (empty($data['id'])) {
-            throw new \InvalidArgumentException(
-                esc_html__('Card data must include Scryfall ID.', 'l4m4w')
-            );
-        }
-        if (empty($data['name'])) {
-            throw new \InvalidArgumentException(
-                esc_html__('Card data must include name.', 'l4m4w')
-            );
-        }
-    }
+    private function process_faces( array $data ): array {
+        // Handle multi-faced cards
+        if ( isset( $data['card_faces'] ) && is_array( $data['card_faces'] ) ) {
+            return array_map( function ( $face ) use ( $data ) {
+                // Different image handling based on layout
+                $image=match ( $this->layout ) {
+                    // Split and flip cards share one image
+                    'split', 'flip' => esc_url_raw( $data['image_uris']['normal'] ?? '' ),
+                    // Adventure cards use the main card image
+                    'adventure' => esc_url_raw( $data['image_uris']['normal'] ?? '' ),
+                    // Transform, modal_dfc, and battle cards use individual face images
+                    default => isset( $face['image_uris'] ) ?
+                        esc_url_raw( $face['image_uris']['normal'] ?? '' ) :
+                        ''
+                };
 
-    // Processes card faces data from Scryfall response
-    private function process_faces(array $data): array
-    {
-        if (isset($data['card_faces']) && is_array($data['card_faces'])) {
-            return array_map(function ($face) {
                 return [
-                    'name' => sanitize_text_field($face['name']),
-                    'image' => esc_url_raw($face['image_uris']['normal'] ?? ''),
-                    'mana_cost' => sanitize_text_field($face['mana_cost'] ?? ''),
-                    'type_line' => sanitize_text_field($face['type_line'] ?? ''),
+                    'name'      => sanitize_text_field( $face['name'] ),
+                    'type_line' => sanitize_text_field( $face['type_line'] ?? '' ),
+                    'image'     => $image,
+                    'keywords'  => isset( $face['keywords'] ) ? array_map( 'sanitize_text_field', $face['keywords'] ) : [],
                 ];
-            }, $data['card_faces']);
+            }, $data['card_faces'] );
         }
 
+        // Handle single-faced cards
         return [[
-            'name' => $this->name,
-            'image' => esc_url_raw($data['image_uris']['normal'] ?? ''),
-            'mana_cost' => sanitize_text_field($data['mana_cost'] ?? ''),
+            'name'      => $this->name,
             'type_line' => $this->type_line,
+            'image'     => esc_url_raw( $data['image_uris']['normal'] ?? '' ),
+            'keywords'  => isset( $data['keywords'] ) ? array_map( 'sanitize_text_field', $data['keywords'] ) : [],
         ]];
     }
 
-    // Determines the primary type of a card based on its type line
-    private function determine_primary_type(): string
-    {
-        // For double-faced cards, we only want to use the front face's type line
-        $type_line = $this->determine_if_double_faced()
-            ? strtolower($this->faces[0]['type_line'] ?? '')
-            : strtolower($this->type_line);
+    private function determine_primary_type(): string {
+        // For split cards, use the type of the first face
+        $type_line=$this->layout === 'split'
+            ? strtolower( $this->faces[0]['type_line'] ?? $this->type_line )
+            : strtolower( $this->faces[0]['type_line'] ?? $this->type_line );
 
-        // Check in order of precedence
-        if (strpos($type_line, 'token') !== false) {
-            return 'token';
+        $type_patterns=[
+            'token'        => '/\btoken\b/',
+            'creature'     => '/\bcreature\b/',
+            'planeswalker' => '/\bplaneswalker\b/',
+            'battle'       => '/\bbattle\b/',
+            'land'         => '/\bland\b/',
+            'artifact'     => '/\bartifact\b/',
+            'enchantment'  => '/\benchantment\b/',
+            'instant'      => '/\binstant\b/',
+            'sorcery'      => '/\bsorcery\b/',
+        ];
+
+        // Check each type in order of precedence
+        foreach ( $type_patterns as $type => $pattern ) {
+            if ( preg_match( $pattern, $type_line ) ) {
+                return $type;
+            }
         }
-        if (strpos($type_line, 'creature') !== false) {
-            return 'creature';
-        }
-        if (strpos($type_line, 'planeswalker') !== false) {
-            return 'planeswalker';
-        }
-        if (strpos($type_line, 'land') !== false) {
-            return 'land';
-        }
-        if (strpos($type_line, 'battle') !== false) {
-            return 'battle';
-        }
-        if (strpos($type_line, 'artifact') !== false) {
-            return 'artifact';
-        }
-        if (strpos($type_line, 'enchantment') !== false) {
-            return 'enchantment';
-        }
-        if (strpos($type_line, 'instant') !== false) {
-            return 'instant';
-        }
-        if (strpos($type_line, 'sorcery') !== false) {
-            return 'sorcery';
-        }
+
         return 'other';
     }
 
-    // Determines if card is double-faced based on layout
-    private function determine_if_double_faced(): bool
-    {
-        return in_array(
-            $this->layout,
-            ['transform', 'modal_dfc', 'double_faced_token'],
-            true
-        );
-    }
+    public function get_full_name(): string {
+        if ( $this->layout === 'split' ) {
+            return implode( ' // ', array_map( function ( $face ) {
+                return $face['name'];
+            }, $this->faces ) );
+        }
 
-    // Returns card data in block format
-    public function to_block_format(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'type_line' => $this->type_line,
-            'primary_type' => $this->primary_type,
-            'cmc' => $this->cmc,
-            'faces' => $this->faces,
-            'layout' => $this->layout,
-            'isDoubleFaced' => $this->is_double_faced,
-            'quantity' => $this->quantity,
-            'foil' => $this->foil,
-            'section' => $this->section,
-            'currentFace' => $this->current_face,
-        ];
-    }
-
-    // Getters
-    public function get_id(): string
-    {
-        return $this->id;
-    }
-
-    public function get_name(): string
-    {
         return $this->name;
     }
 
-    public function get_faces(): array
-    {
-        return $this->faces;
+    public function can_transform(): bool {
+        return count( $this->faces ) > 1 &&
+               isset( self::LAYOUT_TYPES[$this->layout]['transform_type'] ) &&
+               self::LAYOUT_TYPES[$this->layout]['transform_type'] !== 'none';
     }
 
-    public function get_current_face(): ?array
-    {
+    public function transform(): void {
+        if ( $this->can_transform() ) {
+            $this->current_face=( $this->current_face + 1 ) % count( $this->faces );
+        }
+    }
+
+    public function get_current_face(): ?array {
         return $this->faces[$this->current_face] ?? null;
     }
 
-    public function get_section(): string
-    {
+    public function to_block_format(): array {
+        $layout_info=self::LAYOUT_TYPES[$this->layout] ?? self::LAYOUT_TYPES['normal'];
+
+        if ( $this->layout === 'split' && isset( $this->card_data['keywords'] ) ) {
+            $has_aftermath=in_array( 'Aftermath', $this->card_data['keywords'], true );
+
+            if ( $has_aftermath ) {
+                $layout_info['button_icon']='rotate-left';
+                $layout_info['rotate_direction']='rotate-left';
+            }
+        }
+
+        $result=[
+            'id'               => $this->id,
+            'name'             => $this->get_full_name(),
+            'type_line'        => $this->type_line,
+            'primary_type'     => $this->primary_type,
+            'cmc'              => $this->cmc,
+            'faces'            => $this->faces,
+            'layout'           => $this->layout,
+            'current_face'     => $this->current_face,
+            'quantity'         => $this->quantity,
+            'foil'             => $this->foil,
+            'section'          => $this->section,
+            'transform_type'   => $layout_info['transform_type'],
+            'display_type'     => $layout_info['display_type'],
+            'buttonText'       => $layout_info['button_text'],
+            'buttonIcon'       => $layout_info['button_icon'],
+            'rotate_direction' => $layout_info['rotate_direction'],
+            'can_transform'    => $this->can_transform(),
+        ];
+
+        return $result;
+    }
+
+    private function validate_data( array $data ): void {
+        if ( empty( $data['id'] ) ) {
+            throw new InvalidArgumentException( esc_html__( 'Card data must include Scryfall ID.', 'l4m4w' ) );
+        }
+
+        if ( empty( $data['name'] ) ) {
+            throw new InvalidArgumentException( esc_html__( 'Card data must include name.', 'l4m4w' ) );
+        }
+    }
+
+    // Getters and setters
+    public function get_id(): string {
+        return $this->id;
+    }
+
+    public function get_name(): string {
+        return $this->name;
+    }
+
+    public function get_section(): string {
         return $this->section;
     }
 
-    public function get_quantity(): int
-    {
+    public function get_quantity(): int {
         return $this->quantity;
     }
 
-    public function get_primary_type(): string
-    {
+    public function get_primary_type(): string {
         return $this->primary_type;
     }
 
-    public function is_foil(): bool
-    {
+    public function is_foil(): bool {
         return $this->foil;
     }
 
-    // Setters
-    public function set_quantity(int $quantity): void
-    {
-        $this->quantity = max(1, absint($quantity));
+    public function set_quantity( int $quantity ): void {
+        $this->quantity=max( 1, absint( $quantity ) );
     }
 
-    public function set_section(string $section): void
-    {
-        $section = strtolower(sanitize_text_field($section));
-        $this->section = in_array($section, self::SECTIONS, true) ?
+    public function set_section( string $section ): void {
+        $section=strtolower( sanitize_text_field( $section ) );
+        $this->section=in_array( $section, self::SECTIONS, true ) ?
             $section : 'mainboard';
     }
 
-    public function set_foil(bool $foil): void
-    {
-        $this->foil = (bool) $foil;
-    }
-
-    // Flips to the next face if card is double-faced
-    public function flip(): void
-    {
-        if ($this->is_double_faced && count($this->faces) > 1) {
-            $this->current_face = ($this->current_face + 1) % count($this->faces);
-        }
+    public function set_foil( bool $foil ): void {
+        $this->foil=(bool) $foil;
     }
 }
