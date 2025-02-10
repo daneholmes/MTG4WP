@@ -4,7 +4,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 
 const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => {
-    const { importText = '', importing = false, error = '' } = attributes;
+    const { import_text = '', importing = false, error = '' } = attributes;
     const [showDelayMessage, setShowDelayMessage] = useState(false);
 
     const handleImport = async () => {
@@ -14,7 +14,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
             const response = await apiFetch({
                 path: '/mtg4wp/v1/deck/import',
                 method: 'POST',
-                data: { deck_list: importText }
+                data: { deck_list: import_text }
             });
 
             if (response.errors.length > 0) {
@@ -55,10 +55,14 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
         return () => clearTimeout(timeoutId);
     }, [importing]);
 
-    const placeholderText = `4 Lightning Bolt (sld) 901 *F* [mainboard]
-3 Murktide Regent
-3 Steam Vents (grn)
-1 Blood Moon [sideboard]
+    const placeholderText = `4 Tarmogoyf (fut) [mainboard]
+2 Thoughtseize
+4 Liliana of the Veil (uma) *F*
+2 Seasoned Pyromancer (2x2) 363
+3 Collective Brutality [sideboard]
+1 Restless Ridgeline (lci) 283 *F* [maybeboard]
+4 Verdant Catacombs *F*
+1 Elemental t2x2 [tokens]
 `;
 
     return (
@@ -71,8 +75,8 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                 <TextareaControl
                     label={__('Paste your deck list', 'l4m4w')}
                     help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'l4m4w')}
-                    value={importText}
-                    onChange={(newText) => setAttributes({ importText: newText })}
+                    value={import_text}
+                    onChange={(newText) => setAttributes({ import_text: newText })}
                     placeholder={placeholderText}
                     rows={12}
                 />
@@ -98,7 +102,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                         variant="primary"
                         onClick={handleImport}
                         isBusy={importing}
-                        disabled={importing || !importText.trim()}
+                        disabled={importing || !import_text.trim()}
                     >
                         {__('Import', 'l4m4w')}
                     </Button>
