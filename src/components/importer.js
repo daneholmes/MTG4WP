@@ -60,7 +60,7 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
 4 Liliana of the Veil (uma) *F*
 2 Seasoned Pyromancer (2x2) 363
 3 Collective Brutality [sideboard]
-1 Restless Ridgeline (lci) 283 *F* [maybeboard]
+1 Boil (tmp) [maybeboard]
 4 Verdant Catacombs *F*
 1 Elemental t2x2 [tokens]
 `;
