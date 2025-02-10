@@ -36,36 +36,44 @@
             "default": [],
             "items": {
                 "type": "object",
+                "required": ["id", "name"],
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "Unique Scryfall ID of the card",
-                        "required": true
+                        "description": "Unique Scryfall ID of the card"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Card name",
-                        "required": true
+                        "description": "Card name"
                     },
                     "set": {
                         "type": "string",
-                        "description": "Card set-code (deprecated)",
-                        "required": false
+                        "description": "Card set-code (deprecated)"
                     },
                     "collector_number": {
                         "type": "string",
-                        "description": "Card collector number. Related to set (deprecated)",
-                        "required": false
+                        "description": "Card collector number. Related to set (deprecated)"
                     },
                     "type_line": {
                         "type": "string",
-                        "description": "Full type-line of the card",
-                        "required": false
+                        "description": "Full type-line of the card"
                     },
                     "primary_type": {
                         "type": "string",
-                        "description": "Primary card type",
-                        "required": false
+                        "enum": [
+                            "creature",
+                            "planeswalker",
+                            "instant",
+                            "sorcery",
+                            "artifact",
+                            "enchantment",
+                            "land",
+                            "battle",
+                            "token",
+                            "other"
+                        ],
+                        "default": "other",
+                        "description": "Primary card type"
                     },
                     "cmc": {
                         "type": "number",
@@ -88,40 +96,87 @@
                         "default": "mainboard",
                         "description": "Which section of the deck the card belongs to"
                     },
+                    "layout": {
+                        "type": "string",
+                        "enum": ["normal", "transform", "modal_dfc", "split", "flip", "adventure", "battle"],
+                        "default": "normal",
+                        "description": "Original Scryfall layout type"
+                    },
+                    "transform_type": {
+                        "type": "string",
+                        "enum": ["none", "turn-over", "rotate", "flip"],
+                        "default": "none",
+                        "description": "Animation type for card transformation"
+                    },
+                    "display_type": {
+                        "type": "string",
+                        "enum": ["single", "double_faced"],
+                        "default": "single",
+                        "description": "Visual presentation style"
+                    },
+                    "rotate_direction": {
+                        "type": "string",
+                        "enum": ["rotate-right", "rotate-left"],
+                        "default": "rotate-right",
+                        "description": "Direction cards should rotate"
+                    },
+                    "button_text": {
+                        "type": "string",
+                        "enum": ["Transform", "Rotate", "Flip", ""],
+                        "default": "",
+                        "description": "Transform button text"
+                    },
+                    "button_icon": {
+                        "type": "string",
+                        "enum": [
+                            "flip-horizontal",
+                            "flip-vertical",
+                            "rotate-left",
+                            "rotate-right",
+                            ""
+                        ],
+                        "default": "",
+                        "description": "Icon to display on the transform button"
+                    },
                     "faces": {
                         "type": "array",
+                        "default": [],
                         "items": {
                             "type": "object",
+                            "required": ["name"],
                             "properties": {
-                                "name": { 
+                                "name": {
                                     "type": "string",
-                                    "description": "Name of this face",
-                                    "required": true
+                                    "description": "Name of this face"
                                 },
-                                "type_line": { 
+                                "type_line": {
                                     "type": "string",
                                     "description": "Full type-line of this face"
                                 },
-                                "image": { 
+                                "image": {
                                     "type": "string",
                                     "description": "URI of this face's image"
                                 },
-                                "mana_cost": { 
+                                "mana_cost": {
                                     "type": "string",
                                     "description": "Mana cost of this face"
                                 }
                             }
                         }
                     },
-                    "currentFace": {
+                    "current_face": {
                         "type": "number",
                         "default": 0,
                         "description": "Index of the currently displayed face"
+                    },
+                    "can_transform": {
+                        "type": "boolean",
+                        "default": false
                     }
                 }
             }
         },
-        "importText": {
+        "import_text": {
             "type": "string",
             "default": ""
         },
@@ -129,14 +184,9 @@
             "type": "boolean",
             "default": false
         },
-        "showImporter": {
+        "show_importer": {
             "type": "boolean",
             "default": false
-        },
-        "layout": {
-            "type": "string",
-            "enum": ["list", "grid"],
-            "default": "list"
         },
         "searching": {
             "type": "boolean",
@@ -154,13 +204,20 @@
                     "id": "9457b5d3-5e48-4ce1-8c88-1d1600688b1f",
                     "name": "Stroke of Genius",
                     "type_line": "Instant",
+                    "primary_type": "instant",
                     "quantity": 1,
                     "section": "mainboard",
-                    "faces": [{
-                        "name": "Stroke of Genius",
-                        "type_line": "Instant",
-                        "mana_cost": "{X}{2}{U}"
-                    }]
+                    "layout": "normal",
+                    "transform_type": "none",
+                    "display_type": "single",
+                    "can_transform": false,
+                    "faces": [
+                        {
+                            "name": "Stroke of Genius",
+                            "type_line": "Instant",
+                            "mana_cost": "{X}{2}{U}"
+                        }
+                    ]
                 }
             ]
         }
