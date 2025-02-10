@@ -1,5 +1,7 @@
 # MTG4WP
 
+**Please note MTG4WP is still in active development and the 1.0.0 version has not been released.**
+
 MTG4WP is a powerful WordPress plugin that seamlessly displays Magic: The Gathering cards on your WordPress website. With a simple, intuitive Gutenberg block, you can write about Magic showcase card collections with ease.
 
 ## Installation
