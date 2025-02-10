@@ -115,11 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set up flip button handler for mobile
             const flipButton = tooltipContent.querySelector('.flip-button-mobile');
             if (flipButton) {
-                let currentFace = 0;
+                let current_face = 0;
                 flipButton.addEventListener('click', () => {
-                    currentFace = currentFace === 0 ? 1 : 0;
+                    current_face = current_face === 0 ? 1 : 0;
                     const img = tooltipContent.querySelector('img');
-                    img.src = cardData.faces[currentFace].image;
+                    img.src = cardData.faces[current_face].image;
                 });
             }
 
@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const cardData = JSON.parse(cardElement.dataset.card);
             const currentSrc = this.previewColumn.querySelector('img').src;
-            const currentFaceIndex = cardData.faces.findIndex(face => face.image === currentSrc);
-            const nextFaceIndex = currentFaceIndex === 0 ? 1 : 0;
+            const current_faceIndex = cardData.faces.findIndex(face => face.image === currentSrc);
+            const nextFaceIndex = current_faceIndex === 0 ? 1 : 0;
             
             this.updatePreview(cardData, nextFaceIndex);
         }
