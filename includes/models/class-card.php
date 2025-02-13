@@ -24,6 +24,8 @@ class Card {
 
     private int $quantity;
 
+    private array $layout_info;
+
     private bool $foil;
 
     private string $section;
@@ -88,7 +90,6 @@ class Card {
 
     public function __construct( array $data ) {
         $this->validate_data( $data );
-        $this->card_data=$data;
         $this->id=sanitize_text_field( $data['id'] );
         $this->name=sanitize_text_field( $data['name'] );
         $this->type_line=sanitize_text_field( $data['type_line'] ?? '' );
@@ -100,7 +101,16 @@ class Card {
         $this->foil=false;
         $this->section='mainboard';
 
-        // Set primary type after faces are processed
+        // Process layout info during construction
+        $this->layout_info=self::LAYOUT_TYPES[$this->layout] ?? self::LAYOUT_TYPES['normal'];
+
+        if ( $this->layout === 'split' &&
+            isset( $data['keywords'] ) &&
+            in_array( 'Aftermath', $data['keywords'], true ) ) {
+            $this->layout_info['button_icon']='rotate-left';
+            $this->layout_info['rotate_direction']='rotate-left';
+        }
+
         $this->primary_type=$this->determine_primary_type();
     }
 
@@ -193,18 +203,7 @@ class Card {
     }
 
     public function to_block_format(): array {
-        $layout_info=self::LAYOUT_TYPES[$this->layout] ?? self::LAYOUT_TYPES['normal'];
-
-        if ( $this->layout === 'split' && isset( $this->card_data['keywords'] ) ) {
-            $has_aftermath=in_array( 'Aftermath', $this->card_data['keywords'], true );
-
-            if ( $has_aftermath ) {
-                $layout_info['button_icon']='rotate-left';
-                $layout_info['rotate_direction']='rotate-left';
-            }
-        }
-
-        $result=[
+        return [
             'id'               => $this->id,
             'name'             => $this->get_full_name(),
             'type_line'        => $this->type_line,
@@ -216,15 +215,13 @@ class Card {
             'quantity'         => $this->quantity,
             'foil'             => $this->foil,
             'section'          => $this->section,
-            'transform_type'   => $layout_info['transform_type'],
-            'display_type'     => $layout_info['display_type'],
-            'buttonText'       => $layout_info['button_text'],
-            'buttonIcon'       => $layout_info['button_icon'],
-            'rotate_direction' => $layout_info['rotate_direction'],
+            'transform_type'   => $this->layout_info['transform_type'],
+            'display_type'     => $this->layout_info['display_type'],
+            'buttonText'       => $this->layout_info['button_text'],
+            'buttonIcon'       => $this->layout_info['button_icon'],
+            'rotate_direction' => $this->layout_info['rotate_direction'],
             'can_transform'    => $this->can_transform(),
         ];
-
-        return $result;
     }
 
     private function validate_data( array $data ): void {

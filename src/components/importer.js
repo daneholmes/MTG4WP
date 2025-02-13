@@ -1,11 +1,28 @@
 import { __ } from '@wordpress/i18n';
-import { Button, TextareaControl, Modal, Notice, __experimentalHeading as Heading } from '@wordpress/components';
+import { 
+    Button, 
+    TextareaControl, 
+    Modal, 
+    Notice,
+    Spinner,
+    __experimentalHeading as Heading 
+} from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect } from '@wordpress/element';
 
 const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => {
     const { import_text = '', importing = false, error = '' } = attributes;
     const [showDelayMessage, setShowDelayMessage] = useState(false);
+
+    useEffect(() => {
+        let timeoutId;
+        if (importing) {
+            timeoutId = setTimeout(() => setShowDelayMessage(true), 5000);
+        } else {
+            setShowDelayMessage(false); 
+        }
+        return () => clearTimeout(timeoutId);
+    }, [importing]);
 
     const handleImport = async () => {
         try {
@@ -21,11 +38,11 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                 setAttributes({
                     error: (
                         <div className="mtg4wp-import-errors">
-                            <p>{__('Some cards could not be imported:', 'l4m4w')}</p>
+                            <p>{__('Some cards could not be imported:', 'mtg4wp')}</p>
                             <ul>
                                 {response.errors.map((error, index) => (
                                     <li key={index}>
-                                        {__('Line', 'l4m4w')} {error.line}: {error.message}
+                                        {__('Line', 'mtg4wp')} {error.line}: {error.message}
                                         <code>{error.content}</code>
                                     </li>
                                 ))}
@@ -45,58 +62,88 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
         }
     };
 
-    useEffect(() => {
-        let timeoutId;
-        if (importing) {
-            timeoutId = setTimeout(() => setShowDelayMessage(true), 2000);
-        } else {
-            setShowDelayMessage(false);
-        }
-        return () => clearTimeout(timeoutId);
-    }, [importing]);
-
-    const placeholderText = `4 Tarmogoyf (fut) [mainboard]
-2 Thoughtseize
-4 Liliana of the Veil (uma) *F*
-2 Seasoned Pyromancer (2x2) 363
-3 Collective Brutality [sideboard]
-1 Boil (tmp) [maybeboard]
-4 Verdant Catacombs *F*
-1 Elemental t2x2 [tokens]
-`;
+    const placeholderText = `4 Lightning Bolt (2x2)
+1 Blightning (plst) A25-198
+2 Swamp *F*
+1 Sword of Light and Shadow (2xm) [sideboard]
+3 Treetop Village (ddr)
+2 Ancient Grudge (mm3) [sideboard]
+1 Misty Rainforest (mh2) 438
+2 Maelstrom Pulse (fdn)
+2 Olivia Voldaren (inr) *F* [sideboard]
+2 Blood Crypt (rvr) 397 *F*
+4 Deathrite Shaman (rvr) 363
+2 Shatterstorm (atq) [sideboard]
+1 Stomping Ground (rvr) 413 *F*
+2 Fulminator Mage (2xm) [sideboard]
+3 Thoughtseize (tsr) 334
+4 Verdant Catacombs (mh2) 440
+1 Grim Lavamancer (dmr) [sideboard]
+4 Dark Confidant (rav)
+4 Liliana of the Veil (uma)
+4 Tarmogoyf (mm2) *F*
+1 Sowing Salt (uds) [sideboard]
+2 Chandra, Pyromaster (m14)
+3 Marsh Flats (mh2) 437
+2 Grafdigger's Cage (m20) [sideboard]
+1 Forest
+2 Scavenging Ooze
+1 Pillar of Flame (ima)
+1 Obstinate Baloth (ima) [sideboard]
+2 Raging Ravine (clb)
+1 Overgrown Tomb (rvr) 407
+4 Blackcleave Cliffs (one)
+2 Terminate (dmc)
+3 Inquisition of Kozilek (mm3)
+1 Thoughtseize (tsr) [sideboard]`;
 
     return (
         <Modal
-            title={<Heading level={2}>{__('Import Deck', 'l4m4w')}</Heading>}
+            title={<Heading level={2}>{__('Import Deck', 'mtg4wp')}</Heading>}
             onRequestClose={onClose}
             className="mtg4wp-importer-modal"
         >
             <div className="mtg4wp-importer">
+                <div className="mtg4wp-notice-container">
+                    {error && (
+                        <Notice 
+                            status="error" 
+                            isDismissible={false}
+                            className="mtg4wp-import-error"
+                        >
+                            {error}
+                        </Notice>
+                    )}
+                    {importing && showDelayMessage && (
+                        <Notice
+                            status="info"
+                            isDismissible={false}
+                            className="mtg4wp-import-status"
+                        >
+                            <div className="mtg4wp-import-status-content">
+                                <Spinner />
+                                {__('Still processing deck...', 'mtg4wp')}
+                            </div>
+                        </Notice>
+                    )}
+                </div>
+
                 <TextareaControl
-                    label={__('Paste your deck list', 'l4m4w')}
-                    help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'l4m4w')}
+                    label={__('Paste your deck list', 'mtg4wp')}
+                    help={__('Format: Quantity Card Name (Set Code) Collector Number *F* [Section]', 'mtg4wp')}
                     value={import_text}
                     onChange={(newText) => setAttributes({ import_text: newText })}
                     placeholder={placeholderText}
                     rows={12}
                 />
 
-                {error && (
-                    <Notice 
-                        status="error" 
-                        isDismissible={false}
-                        className="mtg4wp-import-error"
-                    >
-                        {error}
-                    </Notice>
-                )}
-
                 <div className="mtg4wp-importer-actions">
                     <Button
                         variant="secondary"
                         onClick={onClose}
+                        disabled={importing}
                     >
-                        {__('Cancel', 'l4m4w')}
+                        {__('Cancel', 'mtg4wp')}
                     </Button>
                     <Button
                         variant="primary"
@@ -104,18 +151,9 @@ const DeckImporter = ({ attributes = {}, setAttributes, onImport, onClose }) => 
                         isBusy={importing}
                         disabled={importing || !import_text.trim()}
                     >
-                        {__('Import', 'l4m4w')}
+                        {importing ? __('Importing...', 'mtg4wp') : __('Import', 'mtg4wp')}
                     </Button>
                 </div>
-                {showDelayMessage && (
-                    <Notice
-                        status="info"
-                        isDismissible={false}
-                        className="mtg4wp-import-notice"
-                    >
-                        {__('Hold tight. Importing 10 cards per second.', 'l4m4w')}
-                    </Notice>
-                )}
             </div>
         </Modal>
     );
