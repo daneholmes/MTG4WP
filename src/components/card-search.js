@@ -36,7 +36,7 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
             }
 
             if (queryParams.toString() === '') {
-                throw new Error(__('Please provide a card name or set and collector number.', 'l4m4w'));
+                throw new Error(__('Please provide a card name or set and collector number.', 'mtg4wp'));
             }
     
             const response = await apiFetch({
@@ -60,9 +60,13 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
         } catch (err) {
             setAttributes({ 
                 searching: false,
-                error: err.message || __('An error occurred while searching for cards.', 'l4m4w'),
+                error: err.message || __('An error occurred while searching for cards.', 'mtg4wp'),
             });
         }
+    };
+
+    const handleDismissError = () => {
+        setAttributes({ error: '' });
     };
 
     const isSearchDisabled = searching || (!searchTerm.trim() && (!searchSet.trim() || !searchNumber.trim()));
@@ -72,57 +76,69 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
             <div className="mtg4wp-section-header">
                 <div className="mtg4wp-header-content">
                     <Heading level={2}>
-                        {__('Add Cards', 'l4m4w')}
+                        {__('Add Cards', 'mtg4wp')}
                     </Heading>
                     <Button 
                         variant="secondary"
                         onClick={onOpenImporter}
                         className="mtg4wp-import-button"
                     >
-                        {__('Import Deck', 'l4m4w')}
+                        {__('Import Deck', 'mtg4wp')}
                     </Button>
                 </div>
             </div>
+
+            <div className="mtg4wp-notice-container">
+                {error && (
+                    <Notice 
+                        status="error"
+                        onRemove={handleDismissError}
+                        className="mtg4wp-error-notice"
+                    >
+                        {error}
+                    </Notice>
+                )}
+            </div>
             
             <TextControl
-                label={__('Card Name', 'l4m4w')}
+                label={__('Card Name', 'mtg4wp')}
                 value={searchTerm}
                 onChange={setSearchTerm}
-                placeholder={__("e.g. Sensei's Divining Top", 'l4m4w')}
-                help={__('Enter a card name', 'l4m4w')}
+                placeholder={__("e.g. Sensei's Divining Top", 'mtg4wp')}
+                help={__('Enter a card name', 'mtg4wp')}
             />
             
             <TextControl
-                label={__('Set Code', 'l4m4w')}
+                label={__('Set Code', 'mtg4wp')}
                 value={searchSet}
                 onChange={setSearchSet}
-                placeholder={__('e.g. chk', 'l4m4w')}
+                placeholder={__('e.g. chk', 'mtg4wp')}
                 help={
                     <>
-                        {__('For a specific printing enter a set code.', 'l4m4w')}{' '}
+                        {__('For a specific printing enter a set code', 'mtg4wp')}{' '}
                         <ExternalLink
-                            href="#"
+                            href="https://daneholmes.com/mtg4wp/#find-code"
                             rel="nofollow noreferrer"
                         >
-                            {__('Learn more', 'l4m4w')}
+                            {__('Learn more', 'mtg4wp')}
                         </ExternalLink>
                     </>
                 }
             />
             
             <TextControl
-                label={__('Card Number', 'l4m4w')}
+                label={__('Card Number', 'mtg4wp')}
                 value={searchNumber}
                 onChange={setSearchNumber}
-                placeholder={__('e.g. 268', 'l4m4w')}
+                placeholder={__('e.g. 268', 'mtg4wp')}
                 help={
                     <>
-                        {__('Enter the card\'s collector number.', 'l4m4w')}{' '}
+                        {__('Enter the card\'s collector number', 'mtg4wp')}{' '}
                         <ExternalLink
-                            href="#"
+                            href="https://daneholmes.com/mtg4wp/#find-number"
                             rel="nofollow noreferrer"
                         >
-                            {__('Learn more', 'l4m4w')}
+                            {__('Learn more', 'mtg4wp')}
                         </ExternalLink>
                     </>
                 }
@@ -134,18 +150,8 @@ const CardSearch = ({ attributes = {}, setAttributes, onAddCard, onOpenImporter 
                 disabled={isSearchDisabled}
                 isBusy={searching}
             >
-                {searching ? __('Searching...', 'l4m4w') : __('Add Card', 'l4m4w')}
+                {searching ? __('Searching...', 'mtg4wp') : __('Add Card', 'mtg4wp')}
             </Button>
-            
-            {error && (
-                <Notice 
-                    status="error" 
-                    isDismissible={false}
-                    className="mtg4wp-error-notice"
-                >
-                    {error}
-                </Notice>
-            )}
         </div>
     );
 };

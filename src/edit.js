@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody, PanelRow, Notice } from '@wordpress/components';
+import { Button, PanelBody, PanelRow } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 
 import CardList from './components/card-list';
@@ -8,7 +8,7 @@ import CardSearch from './components/card-search';
 import DeckImporter from './components/importer';
 
 const Edit = ({ attributes, setAttributes }) => {
-    const { deck = [], error = '', show_importer = false, imageLoading = {} } = attributes;
+    const { deck = [], show_importer = false, imageLoading = {} } = attributes;
     
     // Get block props with proper className
     const blockProps = useBlockProps({
@@ -68,7 +68,7 @@ const Edit = ({ attributes, setAttributes }) => {
             setAttributes({ deck: response });
         } catch (err) {
             setAttributes({ 
-                error: __('Error sorting deck.', 'l4m4w'),
+                error: __('Error sorting deck.', 'mtg4wp'),
             });
         }
     };
@@ -81,14 +81,14 @@ const Edit = ({ attributes, setAttributes }) => {
         <>
             <div {...blockProps}>
                 <InspectorControls>
-                    <PanelBody title={__('Deck Settings', 'l4m4w')} initialOpen={true}>
+                    <PanelBody title={__('Deck Settings', 'mtg4wp')} initialOpen={true}>
                         <PanelRow>
                             <Button
                                 variant="secondary"
                                 onClick={handleSortDeck}
                                 disabled={!deck.length}
                             >
-                                {__('Sort Deck', 'l4m4w')}
+                                {__('Sort Deck', 'mtg4wp')}
                             </Button>
                         </PanelRow>
                     </PanelBody>
@@ -101,12 +101,6 @@ const Edit = ({ attributes, setAttributes }) => {
                         onAddCard={handleAddCard} 
                         onOpenImporter={() => toggleImporter(true)}
                     />
-                    
-                    {error && (
-                        <Notice status="error" isDismissible={false}>
-                            {error}
-                        </Notice>
-                    )}
 
                     <CardList
                         attributes={attributes}
