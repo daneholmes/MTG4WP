@@ -1,5 +1,15 @@
 import { memo } from '@wordpress/element';
-import classnames from 'classnames';
+
+// Simple utility function to replace classnames
+const combineClasses = (baseClass, conditionalClasses) => {
+    const classes = [baseClass];
+    Object.entries(conditionalClasses).forEach(([className, condition]) => {
+        if (condition) {
+            classes.push(className);
+        }
+    });
+    return classes.filter(Boolean).join(' ');
+};
 
 const CardFace = memo(({ 
     face, 
@@ -11,19 +21,16 @@ const CardFace = memo(({
     onLoad 
 }) => {
     // Ensure both transform-type and rotation direction are applied
-    const classes = classnames(
-        'mtg4wp-card-face',
-        {
-            [`transform-${transform_type}`]: transform_type !== 'none',
-            'is-transformed': isTransformed,
-            'is-foil': isFoil,
-            [rotate_direction]: Boolean(rotate_direction)
-        }
-    );
-
+    const classes = combineClasses('mtg4wp-card-face', {
+        [`transform-${transform_type}`]: transform_type !== 'none',
+        'is-transformed': isTransformed,
+        'is-foil': isFoil,
+        [rotate_direction]: Boolean(rotate_direction)
+    });
+    
     // Log the classes being applied (for debugging)
     console.log('Card Face Classes:', classes);
-
+    
     return (
         <div className={classes}>
             <div className="mtg4wp-card-image-container">
